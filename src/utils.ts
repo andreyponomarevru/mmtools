@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { SUPPORTED_CODEC } from "./validate-lib/config";
 
 export function parseID3V2Array(arr: string[]) {
   return arr.length > 0
@@ -9,7 +10,16 @@ export function parseID3V2Array(arr: string[]) {
     : [];
 }
 
-export async function traverseDirs(dirpath: string, callbacks: Function[]) {
+export function isValidFileExtension(filePath: string) {
+  const extension = path.extname(filePath).slice(1).toLowerCase();
+
+  return SUPPORTED_CODEC.includes(extension);
+}
+
+export async function traverseDirs(
+  dirpath: string,
+  callback: (filePath: string) => void
+) {
   const fileSystemNodes = await fs.promises.readdir(dirpath);
 
   for (const fileSystemNode of fileSystemNodes) {
@@ -17,18 +27,16 @@ export async function traverseDirs(dirpath: string, callbacks: Function[]) {
     const nodeStats = await fs.promises.stat(nodeFullPath);
 
     if (nodeStats.isDirectory()) {
-      await traverseDirs(nodeFullPath, callbacks);
-    } else {
-      try {
-        for (const cb of callbacks) await cb(nodeFullPath);
-      } catch (err) {
-        throw err;
-      }
+      await traverseDirs(nodeFullPath, callback);
+    } else if (isValidFileExtension(nodeFullPath)) {
+      await callback(nodeFullPath);
     }
   }
 }
 
-// m3u utils
+//
+// M3U utils
+//
 
 export function extractFilePathsFromM3U(m3u: string) {
   const m3uLines = m3u.split("\n");
