@@ -3,22 +3,13 @@ import path from "path";
 
 export function parseID3V2Array(arr: string[]) {
   return arr.length > 0
-    ? [...new Set(arr.filter((str) => str.trim()).map((str) => str.trim()))]
+    ? Array.from(
+        new Set(arr.filter((str) => str.trim()).map((str) => str.trim()))
+      )
     : [];
 }
 
-export function getExtensionName(nodePath: string) {
-  if (nodePath === "") throw new Error("Can't be an empty string");
-
-  return path.extname(nodePath).slice(1).toLowerCase();
-}
-
-// TODO: refactor, removing the 'supported codec' variable, you should check this somewhere else ALso get rid of getExtensionName function. traverseDirs should only TRAVERSE DIR, it should not care about file tyoes, etc
-export async function traverseDirs(
-  supportedCodec: string[],
-  dirpath: string,
-  callback: (filePath: string) => void
-) {
+export async function traverseDirs(dirpath: string, callbacks: Function[]) {
   const fileSystemNodes = await fs.promises.readdir(dirpath);
 
   for (const fileSystemNode of fileSystemNodes) {
@@ -26,10 +17,10 @@ export async function traverseDirs(
     const nodeStats = await fs.promises.stat(nodeFullPath);
 
     if (nodeStats.isDirectory()) {
-      await traverseDirs(supportedCodec, nodeFullPath, callback);
-    } else if (supportedCodec.includes(getExtensionName(nodeFullPath))) {
+      await traverseDirs(nodeFullPath, callbacks);
+    } else {
       try {
-        await callback(nodeFullPath);
+        for (const cb of callbacks) await cb(nodeFullPath);
       } catch (err) {
         throw err;
       }
@@ -73,22 +64,7 @@ export async function validateM3UfilePaths(m3uPath: string) {
   return { broken: brokenPaths, ok };
 }
 
-export async function m3uToTracklist(
-  trackPaths: string[],
-  buildLine: (path: string) => Promise<string>,
-  writeToPath: string
-) {
-  const tracklistAsText: string[] = [];
-
-  for (const trackPath of trackPaths) {
-    tracklistAsText.push(await buildLine(trackPath));
-  }
-
-  const lines = tracklistAsText.join("\n");
-  await fs.promises.writeFile(writeToPath, lines);
-}
-
-export function handleBrokenM3Upaths(filePaths: {
+export function processBrokenM3Upaths(filePaths: {
   broken: string[];
   ok: string[];
 }) {
