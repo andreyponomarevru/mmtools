@@ -7,7 +7,12 @@ import {
   extractFilePathsFromM3U,
   validateM3UfilePaths,
   processBrokenM3Upaths,
+  isValidFileExtension,
 } from "./utils";
+
+jest.mock("./validate-lib/config", () => {
+  return { SUPPORTED_CODEC: ["aiff", "mp3"] };
+});
 
 describe("parseID3V2Array", () => {
   it("returns an array parsed", () => {
@@ -47,5 +52,23 @@ describe("parseID3V2Array", () => {
 
       expect(result).toEqual(["Ambient", "Rock", "House"]);
     });
+  });
+});
+
+describe("isValidFileExtension", () => {
+  it("returns 'true' if the file extension is valid", () => {
+    jest.spyOn(path, "extname").mockReturnValue(".aiff");
+
+    const result = isValidFileExtension("/path/to/file/here.aiff");
+
+    expect(result).toBe(true);
+  });
+
+  it("returns 'false' if the file extension is invalid", () => {
+    jest.spyOn(path, "extname").mockReturnValue(".ogg");
+
+    const result = isValidFileExtension("/path/to/here.ogg");
+
+    expect(result).toBe(false);
   });
 });
