@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1, T2A]{fontenc} % T2A enables cyrillics
+\usepackage[english,russian]{babel}
+\usepackage[none]{hyphenat}
+\usepackage[document]{ragged2e}
+\usepackage{layout}
+\usepackage{unicode-math}
+\usepackage{xcolor}
+\usepackage[
+  paperheight=221pt,
+  paperwidth=221pt,
+  left=17pt,
+  right=17pt,
+  top=15pt,
+  bottom=19pt,
+  heightrounded,
+]{geometry}
+\color{white}
+\setlength{\parindent}{0pt}
+\setmainfont[Numbers=OldStyle]{Montserrat-Medium}
+\marginparwidth 0pt
+\marginparsep 0pt
+\voffset 0pt
+
+\begin{document}
+
+\fontsize{5.5pt}{9pt}\selectfont
+\vspace*{\fill}             % align text to bottom
+\tolerance=1                % Prevent overflowing right margin
+\emergencystretch=\maxdimen % Prevent overflowing right margin
+\hyphenpenalty=10000        % Prevent overflowing right margin
+\hbadness=10000             % Prevent overflowing right margin
+Исполнители в миксе:
+\input{./build/artists.txt}
+
+\end{document}
