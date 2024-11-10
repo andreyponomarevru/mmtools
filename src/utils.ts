@@ -48,7 +48,7 @@ export function extractFilePathsFromM3U(m3u: string) {
 
     if (/#EXT/.test(str) || str === "") continue;
 
-    const filePath = decodeURIComponent(str).replace("file://", "");
+    const filePath = decodeURIComponent(str).replace("file://", "").trim();
     filePaths.push(filePath);
   }
 
