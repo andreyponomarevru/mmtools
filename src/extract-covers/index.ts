@@ -1,28 +1,15 @@
 import fs from "fs";
-import path from "path";
-import { execSync } from "child_process";
-import util from "util";
-import { Jimp } from "jimp";
-import { UtfString } from "utfstring";
 import sizeof from "image-size";
 import * as mm from "music-metadata";
-import {
-  traverseDirs,
-  getExtensionName,
-  parseID3V2Array,
-  extractFilePathsFromM3U,
-  handleBrokenM3Upaths,
-} from "../utils";
-import { SUPPORTED_CODEC, COVER_MIN_SIZE } from "../check-lib/config";
+import { processBrokenM3Upaths } from "../utils";
+import { COVER_MIN_SIZE } from "../config";
 import { validateM3UfilePaths } from "../utils";
 
-const EXTRACTED_COVERS_PATH = "./build/extracted-covers";
+const EXTRACTED_COVERS_DIR = "./build/extracted-covers";
 
-const m3uPath = process.argv[2];
+const m3uPathArg = process.argv[2];
 
-//TODO : create a single function running all validation similar to entire database validatons but only for m3u tracks
-
-async function extractCovers(trackPaths: string[]) {
+export async function extractCovers(trackPaths: string[], saveTo: string) {
   for (const index of trackPaths.keys()) {
     const tPath = trackPaths[index];
     const meta = await mm.parseFile(tPath);
@@ -45,16 +32,17 @@ async function extractCovers(trackPaths: string[]) {
       );
     }
 
-    if (!fs.existsSync(EXTRACTED_COVERS_PATH)) {
-      fs.mkdirSync(EXTRACTED_COVERS_PATH);
-    }
-    const filePath = `${EXTRACTED_COVERS_PATH}/${
-      index + 1
-    } ${meta.common.artists?.join(", ")} - ${meta.common.title}.${
-      dimensions.type
-    }`;
+    const filePath = `${saveTo}/${index + 1} ${meta.common.artists?.join(
+      ", "
+    )} - ${meta.common.title}.${dimensions.type}`;
     fs.writeFileSync(filePath, cover.data);
   }
 }
 
-validateM3UfilePaths(m3uPath).then(handleBrokenM3Upaths).then(extractCovers);
+fs.rmSync(EXTRACTED_COVERS_DIR, { recursive: true, force: true });
+
+fs.promises
+  .mkdir(EXTRACTED_COVERS_DIR)
+  .then((r) => validateM3UfilePaths(m3uPathArg))
+  .then(processBrokenM3Upaths)
+  .then((r) => extractCovers(r, EXTRACTED_COVERS_DIR));
