@@ -12,42 +12,34 @@ import {
   REPORT_BAD_TITLE,
   REPORT_BAD_YEAR,
   GENRES,
-} from "./config";
-
-export const coversStats: {
-  [key: string]: { path: string; w: number; h: number }[];
-} = {};
+} from "../config";
 
 export async function checkCover(filePath: string, picture?: mm.IPicture[]) {
   const cover = await mm.selectCover(picture);
 
   if (cover === null) {
     await fs.promises.appendFile(REPORT_NO_COVERS, `${filePath}\n`);
-    return;
+    return {
+      isValid: false,
+      result: { path: filePath, w: undefined, Headers: undefined },
+    };
   }
 
   const dimensions = sizeof(cover.data);
-  if (!dimensions.width || !dimensions.height) {
-    throw new Error("Can't read image dimensions.");
-  }
+  const isUnknownSize = !dimensions.width || !dimensions.height;
 
-  if (dimensions.width < COVER_MIN_SIZE && dimensions.height < COVER_MIN_SIZE) {
-    const coverSize = `${dimensions.width} x ${dimensions.height}`;
+  const isInvalidSize =
+    (dimensions.width || 0) < COVER_MIN_SIZE &&
+    (dimensions.height || 0) < COVER_MIN_SIZE;
 
-    if (!Array.isArray(coversStats[coverSize])) {
-      coversStats[coverSize] = [];
-    }
-
-    coversStats[coverSize].push({
-      path: filePath,
-      w: dimensions.width,
-      h: dimensions.height,
-    });
-  }
+  return {
+    isValid: !(isUnknownSize || isInvalidSize),
+    result: { path: filePath, w: dimensions.width, h: dimensions.height },
+  };
 }
 
 export async function checkBPM(filePath: string, bpm?: number) {
-  if ((bpm && bpm < 0) || bpm === undefined || isNaN(bpm)) {
+  if (bpm === undefined || bpm <= 0 || isNaN(bpm)) {
     await fs.promises.appendFile(REPORT_NO_BPM, `${filePath}\n`);
   }
 }
@@ -80,7 +72,7 @@ export async function checkGenres(filePath: string, genres: string[]) {
 }
 
 export async function checkTitle(filePath: string, title?: string) {
-  if (!title) {
+  if (title === undefined || title.length === 0) {
     await fs.promises.appendFile(REPORT_BAD_TITLE, `${filePath}\n`);
   }
 }
@@ -92,7 +84,13 @@ export async function checkArtists(filePath: string, artists: string[]) {
 }
 
 export async function checkYear(filePath: string, year?: number) {
-  if (!year || year < 0 || !Number.isInteger) {
+  if (
+    !year ||
+    year < 0 ||
+    !Number.isInteger(year) ||
+    year > 2050 ||
+    Number.isFinite(year)
+  ) {
     await fs.promises.appendFile(REPORT_BAD_YEAR, `${filePath}\n - ${year}`);
   }
 }
