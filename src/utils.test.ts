@@ -8,7 +8,6 @@ import {
   extractFilePathsFromM3U,
   validateM3UfilePaths,
   processBrokenM3Upaths,
-  isValidFileExtension,
 } from "./utils";
 import {
   m3uWithAbsolutePaths,
@@ -16,17 +15,6 @@ import {
   m3uWithRelativePathsSavedInQuodLibet,
   m3uWithRelativePathsSavedInVLC,
 } from "./test-helpers/playlists";
-
-jest.mock("./validate-lib/config", () => {
-  const originalModule = jest.requireActual<
-    typeof import("./validate-lib/config")
-  >("./validate-lib/config");
-
-  return {
-    ...originalModule,
-    SUPPORTED_CODEC: ["aiff", "mp3"],
-  };
-});
 
 describe("parseID3V2Array", () => {
   it("returns an array parsed", () => {
@@ -70,18 +58,24 @@ describe("parseID3V2Array", () => {
 });
 
 describe("isValidFileExtension", () => {
-  it("returns 'true' if the file extension is valid", () => {
-    jest.spyOn(path, "extname").mockReturnValue(".aiff");
+  beforeEach(() => {
+    jest.resetModules();
+  });
 
-    // TODO mock SUPPORTED_CODEC
+  it("returns 'true' if the file extension is valid", async () => {
+    jest.doMock("./config", () => ({ SUPPORTED_CODEC: ["aiff", "mp3"] }));
+    jest.spyOn(path, "extname").mockReturnValue(".aiff");
+    const { isValidFileExtension } = await import("./utils");
 
     const result = isValidFileExtension("/path/to/file/here.aiff");
 
     expect(result).toBe(true);
   });
 
-  it("returns 'false' if the file extension is invalid", () => {
+  it("returns 'false' if the file extension is invalid", async () => {
+    jest.doMock("./config", () => ({ SUPPORTED_CODEC: ["aiff", "mp3"] }));
     jest.spyOn(path, "extname").mockReturnValue(".ogg");
+    const { isValidFileExtension } = await import("./utils");
 
     const result = isValidFileExtension("/path/to/here.ogg");
 
