@@ -16,33 +16,35 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
 
     const cover = await mm.selectCover(meta.common.picture);
 
-    if (!cover) {
+    if (cover === null) {
       throw new Error(`Track has no cover: ${tPath}`);
     }
 
-    const dimensions = sizeof(cover.data);
-    if (!dimensions.width || !dimensions.height) {
+    const { width, height, type: imgType } = sizeof(cover.data);
+    if (!width || !height) {
       throw new Error("Can't read image dimensions");
-    } else if (
-      dimensions.width < COVER_MIN_SIZE &&
-      dimensions.height < COVER_MIN_SIZE
-    ) {
+    } else if (width < COVER_MIN_SIZE && height < COVER_MIN_SIZE) {
       throw new Error(
-        `The cover is too small: ${dimensions.width}x${dimensions.height}. Min size (width or height) should be ${COVER_MIN_SIZE})`
+        `The cover is too small: ${width}x${height}. Min size (width or height) should be ${COVER_MIN_SIZE})`
       );
     }
 
-    const filePath = `${saveTo}/${index + 1} ${meta.common.artists?.join(
-      ", "
-    )} - ${meta.common.title}.${dimensions.type}`;
-    fs.writeFileSync(filePath, cover.data);
+    fs.writeFileSync(
+      `${saveTo}/${index + 1} ${meta.common.artists?.join(", ")} - ${
+        meta.common.title
+      }.${imgType}`,
+      cover.data
+    );
   }
 }
 
-fs.rmSync(EXTRACTED_COVERS_DIR, { recursive: true, force: true });
+async function init() {
+  fs.rmSync(EXTRACTED_COVERS_DIR, { recursive: true, force: true });
 
-fs.promises
-  .mkdir(EXTRACTED_COVERS_DIR)
-  .then((r) => validateM3UfilePaths(m3uPathArg))
-  .then(processBrokenM3Upaths)
-  .then((r) => extractCovers(r, EXTRACTED_COVERS_DIR));
+  await fs.promises.mkdir(EXTRACTED_COVERS_DIR);
+  const paths = await validateM3UfilePaths(m3uPathArg);
+  await processBrokenM3Upaths(paths.broken);
+  await extractCovers(paths.ok, EXTRACTED_COVERS_DIR);
+}
+
+init().catch(console.error);
