@@ -13,37 +13,18 @@ import {
 } from "./validators";
 
 let tracksTotal = 0;
-const coversStats: {
-  [key: string]: { path: string; w?: number; h?: number }[];
-} = {};
 
-async function processAudioFile(filePath: string) {
-  const trackMetadata = await mm.parseFile(filePath, { duration: true });
+export async function validateAudioFile(filePath: string) {
+  const { common, format } = await mm.parseFile(filePath, { duration: true });
+  const cover = mm.selectCover(common.picture);
 
-  const checkedCoverResult = await checkCover(
-    filePath,
-    trackMetadata.common.picture
-  );
-  if (!checkedCoverResult.isValid) {
-    const coverSize = `${checkedCoverResult.result.w} x ${checkedCoverResult.result.h}`;
-    if (!Array.isArray(coversStats[coverSize])) {
-      coversStats[coverSize] = [];
-    }
-    coversStats[coverSize].push(checkedCoverResult.result);
-  }
-
-  await checkBPM(filePath, trackMetadata.common.bpm);
-  await checkBitrate(filePath, trackMetadata.format.bitrate);
-  await checkGenres(
-    filePath,
-    parseID3V2Array(trackMetadata.common.genre || [])
-  );
-  await checkTitle(filePath, trackMetadata.common.title);
-  await checkArtists(
-    filePath,
-    parseID3V2Array(trackMetadata.common.artists || [])
-  );
-  await checkYear(filePath, trackMetadata.common.year);
+  await checkCover(filePath, cover);
+  await checkBPM(filePath, common.bpm);
+  await checkBitrate(filePath, format.bitrate);
+  await checkGenres(filePath, parseID3V2Array(common.genre || []));
+  await checkTitle(filePath, common.title);
+  await checkArtists(filePath, parseID3V2Array(common.artists || []));
+  await checkYear(filePath, common.year);
 
   tracksTotal++;
 }
@@ -60,21 +41,23 @@ function onCtrlC() {
 // Clean up and exit on Ctrl+C
 process.on("SIGINT", onCtrlC);
 
-fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
+async function init() {
+  fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
+  await fs.promises.mkdir(REPORTS_DIR);
 
-fs.promises
-  .mkdir(REPORTS_DIR)
-  .then(() => {
-    return traverseDirs(
-      "/mnt/CE64EB6A64EB53AD/music-lib/tracks",
-      processAudioFile
-    );
-  })
-  .then(async () => {
-    const stats = `${JSON.stringify({ tracksTotal, coversStats }, null, 4)}`;
-    await fs.promises.appendFile(REPORT_BAD_COVERS, stats);
+  await traverseDirs(
+    "/mnt/CE64EB6A64EB53AD/music-lib/tracks",
+    validateAudioFile
+  );
 
-    console.log(
-      `\nProcessed all ${SUPPORTED_CODEC.join(", ")} tracks (${tracksTotal})`
-    );
-  });
+  await fs.promises.appendFile(
+    REPORT_BAD_COVERS,
+    `Trackls Total: ${tracksTotal}`
+  );
+
+  console.log(
+    `\nProcessed all ${tracksTotal} tracks (${SUPPORTED_CODEC.join(", ")})`
+  );
+}
+
+init().catch(console.error);
