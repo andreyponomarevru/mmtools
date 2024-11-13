@@ -7,19 +7,20 @@ import {
   processBrokenM3Upaths,
 } from "../utils";
 import { M3U_TRACKLIST } from "../config";
+import { validateAudioFile } from "../validate-lib";
 
 const m3uPathArg = process.argv[2];
 
 async function buildTracklistLine(trackPath: string) {
-  const trackMeta = await mm.parseFile(trackPath);
+  const { common } = await mm.parseFile(trackPath);
 
   const artists = new UtfString(
-    parseID3V2Array(trackMeta.common.artists || []).join(", ")
+    parseID3V2Array(common.artists || []).join(", ")
   );
-  const title = new UtfString(trackMeta.common.title);
-  const year = isNaN(parseInt(trackMeta.common.originaldate || ""))
-    ? trackMeta.common.year
-    : trackMeta.common.originaldate;
+  const title = new UtfString(common.title);
+  const year = isNaN(parseInt(common.originaldate || ""))
+    ? common.originaldate
+    : common.year || 0;
 
   const leftToRightMark = "\u200E";
 
@@ -45,18 +46,26 @@ async function buildArtistsList(trackPaths: string[], writeTo: string) {
   const names = new Set<string>();
 
   for (const tPath of trackPaths) {
-    const trackMeta = await mm.parseFile(tPath);
+    const {
+      common: { artists = [] },
+    } = await mm.parseFile(tPath);
 
-    const artists = parseID3V2Array(trackMeta.common.artists || []);
-    artists.forEach((a) => names.add(a));
+    const list = parseID3V2Array(artists);
+    list.forEach((artist) => names.add(artist));
   }
 
   fs.promises.writeFile(writeTo, `${[...names].join(" - ")}\n\n`);
 }
 
-validateM3UfilePaths(m3uPathArg)
-  .then(processBrokenM3Upaths)
-  .then(async (trackPaths) => {
-    await buildArtistsList(trackPaths, M3U_TRACKLIST);
-    await m3uToTracklist(trackPaths, buildTracklistLine, M3U_TRACKLIST);
-  });
+async function init() {
+  const paths = await validateM3UfilePaths(m3uPathArg);
+
+  await processBrokenM3Upaths(paths.broken);
+
+  for (const path of paths.ok) await validateAudioFile(path);
+
+  await buildArtistsList(paths.ok, M3U_TRACKLIST);
+  await m3uToTracklist(paths.ok, buildTracklistLine, M3U_TRACKLIST);
+}
+
+init().catch(console.error);
