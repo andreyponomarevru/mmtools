@@ -1,8 +1,7 @@
 import fs from "fs";
 import sizeof from "image-size";
-import * as mm from "music-metadata";
+import type { IPicture } from "music-metadata";
 import {
-  REPORT_NO_COVERS,
   COVER_MIN_SIZE,
   REPORT_NO_BPM,
   REPORT_LOW_BITRATE,
@@ -12,43 +11,37 @@ import {
   REPORT_BAD_TITLE,
   REPORT_BAD_YEAR,
   GENRES,
+  REPORT_BAD_COVERS,
 } from "../config";
 
-export async function checkCover(filePath: string, picture?: mm.IPicture[]) {
-  const cover = await mm.selectCover(picture);
-
+export async function checkCover(filePath: string, cover: IPicture | null) {
   if (cover === null) {
-    await fs.promises.appendFile(REPORT_NO_COVERS, `${filePath}\n`);
-    return {
-      isValid: false,
-      result: { path: filePath, w: undefined, Headers: undefined },
-    };
+    await fs.promises.appendFile(REPORT_BAD_COVERS, `${filePath} - no cover\n`);
+    return;
   }
 
-  const dimensions = sizeof(cover.data);
-  const isUnknownSize = !dimensions.width || !dimensions.height;
+  const { width = 0, height = 0 } = sizeof(cover.data);
+  const isInvalidSize = width < COVER_MIN_SIZE && height < COVER_MIN_SIZE;
 
-  const isInvalidSize =
-    (dimensions.width || 0) < COVER_MIN_SIZE &&
-    (dimensions.height || 0) < COVER_MIN_SIZE;
-
-  return {
-    isValid: !(isUnknownSize || isInvalidSize),
-    result: { path: filePath, w: dimensions.width, h: dimensions.height },
-  };
+  if (isInvalidSize) {
+    await fs.promises.appendFile(
+      REPORT_BAD_COVERS,
+      `${filePath} - ${width} x ${height}\n`
+    );
+  }
 }
 
 export async function checkBPM(filePath: string, bpm?: number) {
-  if (bpm === undefined || bpm <= 0 || isNaN(bpm)) {
+  if (bpm === undefined || bpm < 0) {
     await fs.promises.appendFile(REPORT_NO_BPM, `${filePath}\n`);
   }
 }
 
 export async function checkBitrate(filePath: string, bitrate?: number) {
-  if (bitrate && bitrate < MIN_BITRATE) {
+  if (!bitrate || bitrate < MIN_BITRATE) {
     await fs.promises.appendFile(
       REPORT_LOW_BITRATE,
-      `${bitrate / 1000}kbps - ${filePath}\n`
+      `${(bitrate || 0) / 1000}kbps - ${filePath}\n`
     );
   }
 }
@@ -86,10 +79,10 @@ export async function checkArtists(filePath: string, artists: string[]) {
 export async function checkYear(filePath: string, year?: number) {
   if (
     !year ||
-    year < 0 ||
     !Number.isInteger(year) ||
+    year < 0 ||
     year > 2050 ||
-    Number.isFinite(year)
+    !Number.isFinite(year)
   ) {
     await fs.promises.appendFile(REPORT_BAD_YEAR, `${filePath}\n - ${year}`);
   }
