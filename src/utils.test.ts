@@ -144,7 +144,7 @@ describe("validateM3UfilePaths", () => {
 });
 
 describe("processBrokenM3Upaths", () => {
-  it("if there are broken paths found, exits process", () => {
+  it("exits process if there are broken paths", () => {
     const mockExit = jest
       .spyOn(process, "exit")
       .mockImplementation((number) => {
@@ -152,19 +152,18 @@ describe("processBrokenM3Upaths", () => {
       });
 
     expect(() => {
-      processBrokenM3Upaths({ broken: ["/a/b/c", "/d/e/f"], ok: ["/g/h"] });
+      processBrokenM3Upaths(["/a/b/c", "/d/e/f"]);
     }).toThrow();
     expect(mockExit.mock.calls.length).toBe(1);
   });
 
-  it("if there are no broken paths found, returns valid paths as array", () => {
-    jest.spyOn(process, "exit").mockImplementation(() => {
+  it("doesn't exit process if there are no broken paths", () => {
+    const mockExit = jest.spyOn(process, "exit").mockImplementation(() => {
       throw new Error();
     });
-    const validPaths = ["/a/b/c", "/d/e/f", "/g/h/i"];
 
-    const result = processBrokenM3Upaths({ broken: [], ok: validPaths });
+    processBrokenM3Upaths([]);
 
-    expect(result).toEqual(validPaths);
+    expect(mockExit).not.toBeCalled();
   });
 });

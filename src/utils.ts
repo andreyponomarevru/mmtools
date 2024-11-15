@@ -73,15 +73,10 @@ export async function validateM3UfilePaths(m3uPath: string) {
   return { broken: brokenPaths, ok };
 }
 
-export function processBrokenM3Upaths(filePaths: {
-  broken: string[];
-  ok: string[];
-}) {
-  if (filePaths.broken.length > 0) {
-    const list = filePaths.broken.join("\n");
+export function processBrokenM3Upaths(brokenFilePaths: string[]) {
+  if (brokenFilePaths.length > 0) {
+    const list = brokenFilePaths.join("\n");
     console.error(`The following M3U file paths are broken: \n\n${list}`);
     process.exit();
-  } else {
-    return filePaths.ok;
   }
 }
