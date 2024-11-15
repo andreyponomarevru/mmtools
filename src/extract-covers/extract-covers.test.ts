@@ -8,24 +8,25 @@ import { extractCovers } from "./extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/playlists";
 import { COVER_MIN_SIZE, EXTRACTED_COVERS_DIR } from "../config";
 import { mmFacade } from "../music-metadata-facade";
-//import { processBrokenM3Upaths, validateM3UfilePaths } from "../utils";
+import { processBrokenM3Upaths, validateM3UfilePaths } from "../utils";
 
-jest.mock("../music-metadata-facade");
-/*jest.mock("../utils", () => {
+jest.mock("../utils", () => {
   const originalModule =
     jest.requireActual<typeof import("../utils")>("../utils");
-
   return {
     ...originalModule,
-    processBrokenM3Upaths: jest.fn<typeof processBrokenM3Upaths>(),
-    validateM3UfilePaths: jest.fn<typeof validateM3UfilePaths>(),
+    processBrokenM3Upaths: jest.fn(),
+    validateM3UfilePaths: jest.fn(),
   };
-});*/
+});
+jest.mock("../music-metadata-facade");
 jest.mock("image-size");
 jest.mock("fs", () => {
   const originalModule = jest.requireActual<typeof import("fs")>("fs");
   return { ...originalModule, writeFileSync: jest.fn() };
 });
+
+describe("init", () => {});
 
 describe("extractCovers", () => {
   it("throws error if cover is absent", async () => {
@@ -68,9 +69,27 @@ describe("extractCovers", () => {
     await expect(result).rejects.toThrow("The cover is too small:");
   });
 
-  it.todo("throws error if cover size can't be determined");
+  it("throws error if cover size can't be determined", async () => {
+    jest.mocked(mmFacade).parseFile.mockResolvedValue({
+      meta: {} as ICommonTagsResult & IFormat,
+      cover: { format: "", data: Buffer.from([]) },
+    });
+    jest.mocked(sizeof).default.mockImplementation(
+      () =>
+        ({
+          width: undefined,
+          height: undefined,
+          type: undefined,
+        } as any)
+    );
 
-  it("writes cover to disk if it exists and it's size is valid", async () => {
+    const result = () =>
+      extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
+
+    await expect(result).rejects.toThrow("Can't read image dimensions");
+  });
+
+  it("writes every cover from m3u playlist to disk if it exists and it's size is valid", async () => {
     jest.mocked(mmFacade).parseFile.mockResolvedValue({
       meta: {
         artists: ["Artist name 1", "Artist name 2"],
