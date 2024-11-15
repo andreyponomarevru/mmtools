@@ -1,9 +1,7 @@
-import path from "path";
-import util from "util";
-import fs, { writeFileSync } from "fs";
+import fs from "fs";
 import { ICommonTagsResult, IFormat } from "music-metadata";
 import * as sizeof from "image-size";
-import { describe, expect, it, jest, beforeAll, afterAll } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { extractCovers } from "./extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/playlists";
 import { COVER_MIN_SIZE, EXTRACTED_COVERS_DIR } from "../config";
