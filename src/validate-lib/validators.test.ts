@@ -2,7 +2,7 @@ import path from "path";
 import util from "util";
 import fs from "fs";
 import * as sizeof from "image-size";
-import * as mm from "music-metadata";
+import { IPicture } from "music-metadata";
 import { describe, expect, it, jest } from "@jest/globals";
 import {
   checkYear,
@@ -23,7 +23,7 @@ describe("checkCover", () => {
   const picture = {
     format: "image/jpeg",
     data: new Uint8Array(),
-  } as mm.IPicture;
+  } as IPicture;
 
   let appendFileMock: ReturnType<typeof jest.spyOn>;
   beforeEach(() => {

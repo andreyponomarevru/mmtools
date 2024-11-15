@@ -145,6 +145,7 @@ describe("validateM3UfilePaths", () => {
 
 describe("processBrokenM3Upaths", () => {
   it("exits process if there are broken paths", () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
     const mockExit = jest
       .spyOn(process, "exit")
       .mockImplementation((number) => {

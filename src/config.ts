@@ -11,7 +11,7 @@ export const GENRES = genres;
 
 export const REPORTS_DIR = "./build/reports";
 
-export const REPORT_BAD_COVERS = `${REPORTS_DIR}/bad-covers.json`;
+export const REPORT_BAD_COVERS = `${REPORTS_DIR}/bad-covers.log`;
 export const REPORT_NO_BPM = `${REPORTS_DIR}/bad-bpm.log`;
 export const REPORT_LOW_BITRATE = `${REPORTS_DIR}/bad-bitrate.log`;
 export const REPORT_BAD_GENRES = `${REPORTS_DIR}/bad-genre.log`;

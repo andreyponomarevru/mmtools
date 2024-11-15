@@ -58,7 +58,6 @@ export function extractFilePathsFromM3U(m3u: string) {
 export async function validateM3UfilePaths(m3uPath: string) {
   const m3u = await fs.promises.readFile(m3uPath, "utf-8");
 
-  console.log(extractFilePathsFromM3U);
   const trackFilePaths = extractFilePathsFromM3U(m3u);
 
   const brokenPaths: string[] = [];
