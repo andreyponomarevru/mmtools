@@ -1,13 +1,13 @@
-A bunch of tools for audio files / music lib management, streamlining the creation of podcasts (generating covers, tracklists, reporting on inconsistencies in music lib, etc.)
+A bunch of tools for audio files / music lib management, streamlining the creation of podcasts (generating covers, tracklists, reporting on inconsistencies in music library, etc.)
 
 **Stack:**
 
 - Node.js (TypeScript)
 - Bash
 - A bunch of command-line tools:
-  - ImageMagick
-  - Inkscape
-  - `operon` music tagger from Quod Libet package
+  - ImageMagick (`sudo apt install imagemagick`)
+  - Inkscape (`sudo apt install inkscape`)
+  - `operon` music tagger from Quod Libet music player package (`sudo apt install quodlibet`)
 
 # Features
 
