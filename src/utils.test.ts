@@ -1,10 +1,8 @@
 import path from "path";
-import util from "util";
 import fs from "fs";
-import { describe, expect, it, jest, beforeAll, afterAll } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import {
   parseID3V2Array,
-  traverseDirs,
   extractFilePathsFromM3U,
   validateM3UfilePaths,
   processBrokenM3Upaths,
@@ -88,14 +86,14 @@ describe("extractFilePathsFromM3U", () => {
     it("when m3u contains absolute file paths", () => {
       const result = extractFilePathsFromM3U(m3uWithAbsolutePaths.m3u);
 
-      expect(result.length).toBe(12);
+      expect(result.length).toBe(m3uWithAbsolutePaths.parsed.length);
       expect(result).toEqual(m3uWithAbsolutePaths.parsed);
     });
 
     it("when m3u contains file names with non-latin chars", () => {
       const result = extractFilePathsFromM3U(m3uWithNonLatinChars.m3u);
 
-      expect(result.length).toBe(12);
+      expect(result.length).toBe(m3uWithNonLatinChars.parsed.length);
       expect(result).toEqual(m3uWithNonLatinChars.parsed);
     });
 
@@ -104,7 +102,7 @@ describe("extractFilePathsFromM3U", () => {
         m3uWithRelativePathsSavedInVLC.m3u
       );
 
-      expect(result.length).toBe(3);
+      expect(result.length).toBe(m3uWithRelativePathsSavedInVLC.parsed.length);
       expect(result).toEqual(m3uWithRelativePathsSavedInVLC.parsed);
     });
 
@@ -113,7 +111,9 @@ describe("extractFilePathsFromM3U", () => {
         m3uWithRelativePathsSavedInQuodLibet.m3u
       );
 
-      expect(result.length).toBe(4);
+      expect(result.length).toBe(
+        m3uWithRelativePathsSavedInQuodLibet.parsed.length
+      );
       expect(result).toEqual(m3uWithRelativePathsSavedInQuodLibet.parsed);
     });
   });
