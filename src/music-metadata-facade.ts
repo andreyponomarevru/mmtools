@@ -8,7 +8,7 @@ class MusicMetadataFacade {
   }
 
   async parseFile(path: string) {
-    const track = await this.parser.default.parseFile(path, { duration: true });
+    const track = await this.parser.parseFile(path, { duration: true });
     return {
       meta: { ...track.common, ...track.format },
       cover: mm.selectCover(track.common.picture),
