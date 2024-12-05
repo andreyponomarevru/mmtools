@@ -1,4 +1,5 @@
 import * as mm from "music-metadata";
+import { format } from "path";
 
 class MusicMetadataFacade {
   parser: typeof import("music-metadata");
@@ -10,7 +11,20 @@ class MusicMetadataFacade {
   async parseFile(path: string) {
     const track = await this.parser.parseFile(path, { duration: true });
     return {
-      meta: { ...track.common, ...track.format },
+      meta: {
+        year: track.common.year,
+        title: track.common.title,
+        artists: track.common.artists,
+        album: track.common.album,
+        originaldate: track.common.originaldate,
+        genre: track.common.genre,
+        publisher: track.common.publisher,
+        label: track.common.label,
+        bpm: track.common.bpm,
+        catalognumber: track.common.catalognumber,
+        format: track.format.duration,
+        bitrate: track.format.bitrate,
+      },
       cover: mm.selectCover(track.common.picture),
     };
   }

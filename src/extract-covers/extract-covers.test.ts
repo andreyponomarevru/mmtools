@@ -6,6 +6,7 @@ import { extractCovers } from "./extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/playlists";
 import { COVER_MIN_SIZE, EXTRACTED_COVERS_DIR } from "../config";
 import { mmFacade } from "../music-metadata-facade";
+import { TracklistLineMeta } from "../m3u-to-tracklist/m3u-to-tracklist";
 
 jest.mock("../music-metadata-facade");
 jest.mock("image-size");
@@ -18,7 +19,7 @@ jest.mock("fs", () => {
 describe("extractCovers", () => {
   it("throws error if cover is absent", async () => {
     const parsedTrack = {
-      meta: {} as ICommonTagsResult & IFormat,
+      meta: {} as TracklistLineMeta,
       cover: null,
     };
     const parsedCover = {
@@ -26,8 +27,8 @@ describe("extractCovers", () => {
       height: COVER_MIN_SIZE,
       type: "jpg",
     };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack);
-    jest.mocked(sizeof).default.mockImplementationOnce(parsedCover as any);
+    jest.mocked(mmFacade.parseFile).mockResolvedValue(parsedTrack as any);
+    jest.mocked(sizeof.default).mockImplementationOnce(parsedCover as any);
 
     const result = () =>
       extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
@@ -37,7 +38,7 @@ describe("extractCovers", () => {
 
   it("throws error if cover width and height are both less than COVER_MIN_SIZE", async () => {
     const parsedTrack = {
-      meta: {} as ICommonTagsResult & IFormat,
+      meta: {} as TracklistLineMeta,
       cover: { format: "", data: Buffer.from([]) },
     };
     const parsedCover = {
@@ -45,7 +46,7 @@ describe("extractCovers", () => {
       height: COVER_MIN_SIZE - 1,
       type: "jpg",
     };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack);
+    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
     jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
 
     const result = () =>
@@ -56,7 +57,7 @@ describe("extractCovers", () => {
 
   it("throws error if cover size can't be determined", async () => {
     const parsedTrack = {
-      meta: {} as ICommonTagsResult & IFormat,
+      meta: {} as TracklistLineMeta,
       cover: { format: "", data: Buffer.from([]) },
     };
     const parsedCover = {
@@ -64,7 +65,7 @@ describe("extractCovers", () => {
       height: undefined,
       type: undefined,
     };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack);
+    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
     jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
 
     const result = () =>
@@ -78,7 +79,7 @@ describe("extractCovers", () => {
       meta: {
         artists: ["Artist name 1", "Artist name 2"],
         title: "Song Title",
-      } as ICommonTagsResult & IFormat,
+      } as TracklistLineMeta,
       cover: { format: "", data: Buffer.from([]) },
     };
     const parsedCover = {
@@ -86,7 +87,7 @@ describe("extractCovers", () => {
       height: COVER_MIN_SIZE,
       type: "jpg",
     };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack);
+    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
     jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
     const writeFIleSpy = jest
       .spyOn(fs.promises, "writeFile")
