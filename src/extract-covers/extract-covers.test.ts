@@ -27,7 +27,7 @@ describe("extractCovers", () => {
       type: "jpg",
     };
     jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack);
-    jest.mocked(sizeof).default.mockImplementation(parsedCover as any);
+    jest.mocked(sizeof).default.mockImplementationOnce(parsedCover as any);
 
     const result = () =>
       extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
@@ -90,7 +90,7 @@ describe("extractCovers", () => {
     jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
     const writeFIleSpy = jest
       .spyOn(fs.promises, "writeFile")
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementationOnce(() => Promise.resolve());
 
     await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
 
