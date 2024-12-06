@@ -3,7 +3,6 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { mmFacade } from "../music-metadata-facade";
 import { buildTracklistLine } from "./m3u-to-tracklist";
 import { parseID3V2Array } from "../utils";
-import { buildArtistsList } from "./m3u-to-tracklist";
 
 jest.mock("../utils");
 jest.mock("../music-metadata-facade");
