@@ -84,6 +84,6 @@ export async function checkYear(filePath: string, year?: number) {
     year > 2050 ||
     !Number.isFinite(year)
   ) {
-    await fs.promises.appendFile(REPORT_BAD_YEAR, `${filePath}\n - ${year}`);
+    await fs.promises.appendFile(REPORT_BAD_YEAR, `${filePath} - ${year}\n`);
   }
 }

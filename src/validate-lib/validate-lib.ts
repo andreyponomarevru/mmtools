@@ -33,19 +33,11 @@ export function onCtrlC() {
   process.exit();
 }
 
-export async function init() {
+export async function init(libPath: string) {
   fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
   await fs.promises.mkdir(REPORTS_DIR);
 
-  await traverseDirs(
-    "/mnt/CE64EB6A64EB53AD/music-lib/tracks",
-    validateAudioFile
-  );
-
-  await fs.promises.appendFile(
-    REPORT_BAD_COVERS,
-    `Trackls Total: ${tracksTotal}`
-  );
+  await traverseDirs(libPath, validateAudioFile);
 
   console.log(
     `\nProcessed all ${tracksTotal} tracks (${SUPPORTED_CODEC.join(", ")})`
