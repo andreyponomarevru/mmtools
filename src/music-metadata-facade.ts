@@ -1,7 +1,4 @@
 import * as mm from "music-metadata";
-import { parseFile } from "music-metadata";
-
-console.log("parseFile: ", parseFile);
 
 type Parser = typeof import("music-metadata");
 
