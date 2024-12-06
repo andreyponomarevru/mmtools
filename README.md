@@ -36,3 +36,23 @@ ffmpeg \
 
 - `-ss` — cut from (seconds)
 - `-to` — cut to (seconds)
+
+# Development notes
+
+## `music-metadata` issues and bugs
+
+**DO NOT UPDATE `music-metadata` PACKAGE.** The author of `music-metadata` introduced some breaking changes concerned with ES/CommonJS modules format that lead to `jest` being unable to run integration tests with `music-metadata` heigher than `7.14.0`. I've spent several days trying to fix the issue and had no luck, so stick to the old version of this package.
+
+Also, this part of `tsconfig.json`:
+
+```json
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+```
+
+is _required_ to run `music-metadata`, otherwise it breaks.
+
+The best solution is to move to ESM-first testing framework (Node.js native test runner, Vitest, or node-tap)
