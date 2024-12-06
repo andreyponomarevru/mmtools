@@ -1,6 +1,7 @@
 import { init, onCtrlC } from "./validate-lib";
+import { LIB_PATH } from "../config";
 
 // Clean up and exit on Ctrl+C
 process.on("SIGINT", onCtrlC);
 
-init().catch(console.error);
+init(LIB_PATH).catch(console.error);
