@@ -1,10 +1,14 @@
 import * as mm from "music-metadata";
-import { format } from "path";
+import { parseFile } from "music-metadata";
+
+console.log("parseFile: ", parseFile);
+
+type Parser = typeof import("music-metadata");
 
 class MusicMetadataFacade {
-  parser: typeof import("music-metadata");
+  parser: Parser;
 
-  constructor(mm: typeof import("music-metadata")) {
+  constructor(mm: Parser) {
     this.parser = mm;
   }
 
@@ -18,7 +22,6 @@ class MusicMetadataFacade {
         album: track.common.album,
         originaldate: track.common.originaldate,
         genre: track.common.genre,
-        publisher: track.common.publisher,
         label: track.common.label,
         bpm: track.common.bpm,
         catalognumber: track.common.catalognumber,

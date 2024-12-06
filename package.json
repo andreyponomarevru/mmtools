@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "author": "Andrey Ponomarev",
+  "type": "module",
   "scripts": {
     "validatelib": "npx tsx ./src/validate-lib",
     "buildcover": "npx tsx ./src/build-cover",
@@ -23,7 +24,7 @@
     "image-size": "^1.1.1",
     "jest": "^29.7.0",
     "jimp": "^1.6.0",
-    "music-metadata": "^10.6.0",
+    "music-metadata": "7.14.0",
     "ts-jest": "^29.2.5",
     "utfstring": "^3.1.3"
   },
