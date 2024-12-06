@@ -1,9 +1,8 @@
 import fs from "fs";
-import { ICommonTagsResult, IFormat } from "music-metadata";
 import * as sizeof from "image-size";
 import { describe, expect, it, jest } from "@jest/globals";
 import { extractCovers } from "./extract-covers";
-import { m3uWithAbsolutePaths } from "../test-helpers/playlists";
+import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
 import { COVER_MIN_SIZE, EXTRACTED_COVERS_DIR } from "../config";
 import { mmFacade } from "../music-metadata-facade";
 import { TracklistLineMeta } from "../m3u-to-tracklist/m3u-to-tracklist";

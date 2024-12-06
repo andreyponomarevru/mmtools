@@ -12,7 +12,7 @@ import {
   m3uWithNonLatinChars,
   m3uWithRelativePathsSavedInQuodLibet,
   m3uWithRelativePathsSavedInVLC,
-} from "./test-helpers/playlists";
+} from "./test-helpers/m3u-playlists";
 
 describe("parseID3V2Array", () => {
   it("returns an array parsed", () => {
