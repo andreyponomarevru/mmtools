@@ -4,6 +4,8 @@
 
 import genres from "./validate-lib/genres.json";
 
+export const LIB_PATH = "/mnt/CE64EB6A64EB53AD/music-lib/tracks";
+
 export const SUPPORTED_CODEC = ["flac", "mp3"];
 export const COVER_MIN_SIZE = 599;
 export const MIN_BITRATE = 320000;
