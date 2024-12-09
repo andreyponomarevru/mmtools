@@ -11,8 +11,8 @@
     "buildcover": "npx tsx ./src/build-cover",
     "extractcovers": "npx tsx ./src/extract-covers",
     "extracttracklist": "npx tsx ./src/m3u-to-tracklist",
-    "test:unit": "jest --detectOpenHandles --watchAll ./src",
-    "test:integration": "jest --detectOpenHandles --watchAll ./__integration-tests__  --runInBand",
+    "test:unit": "jest --verbose --detectOpenHandles --watchAll ./src",
+    "test:integration": "jest --verbose --detectOpenHandles --watchAll ./__integration-tests__  --runInBand",
     "test:coverage": "jest --coverage",
     "clearjest": "jest --clearCache"
   },
