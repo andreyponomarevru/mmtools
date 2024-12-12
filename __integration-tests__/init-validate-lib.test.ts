@@ -12,19 +12,13 @@ import {
   REPORT_NO_BPM,
   REPORTS_DIR,
 } from "../src/config";
-
-async function isPathExists(path: string) {
-  return fs.promises.stat(path).then(
-    () => true,
-    () => false
-  );
-}
+import { isPathExists } from "../src/test-helpers/helpers";
 
 const PATH_TO_INVALID_TRACKS = "./__test-data__/music-lib/invalid-tags";
 const PATH_TO_VALID_TRACKS = "./__test-data__/music-lib/valid-tags";
 
 describe("validates library", () => {
-  it("writes errors to text files if there are any invalid ID3 tags", async () => {
+  it("creates .log file for each type of library constraint", async () => {
     await fs.promises.rm(REPORTS_DIR, { force: true, recursive: true });
 
     expect(await isPathExists(REPORTS_DIR)).toBe(false);
@@ -50,7 +44,7 @@ describe("validates library", () => {
     expect(reportsDir.sort()).toEqual(fileNames);
   });
 
-  it("doesn't create files if there are no invalid ID3 tags", async () => {
+  it("doesn't create .log files if there are no invalid ID3 tags", async () => {
     await fs.promises.rm(REPORTS_DIR, { force: true, recursive: true });
 
     expect(await isPathExists(REPORTS_DIR)).toBe(false);
