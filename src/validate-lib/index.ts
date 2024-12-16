@@ -1,4 +1,5 @@
-import { init, onCtrlC } from "./validate-lib";
+import { init } from "./init";
+import { onCtrlC } from "./validate-lib";
 import { LIB_PATH } from "../config";
 
 // Clean up and exit on Ctrl+C

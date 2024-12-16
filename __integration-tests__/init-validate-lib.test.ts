@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
-import { init } from "../src/validate-lib/validate-lib";
+import { init } from "../src/validate-lib/init";
 import {
   REPORT_BAD_ARTISTS,
   REPORT_BAD_COVERS,

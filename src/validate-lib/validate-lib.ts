@@ -1,7 +1,7 @@
 import fs from "fs";
 import { mmFacade } from "../music-metadata-facade";
-import { traverseDirs, parseID3V2Array } from "../utils";
-import { SUPPORTED_CODEC, REPORTS_DIR, REPORT_BAD_COVERS } from "../config";
+import { parseID3V2Array } from "../utils";
+import { REPORTS_DIR } from "../config";
 import {
   checkCover,
   checkArtists,
@@ -12,7 +12,7 @@ import {
   checkYear,
 } from "./validators";
 
-let tracksTotal = 0;
+export let tracksTotal = 0;
 
 export async function validateAudioFile(filePath: string) {
   const { meta, cover } = await mmFacade.parseFile(filePath);
@@ -31,15 +31,4 @@ export async function validateAudioFile(filePath: string) {
 export function onCtrlC() {
   fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
   process.exit();
-}
-
-export async function init(libPath: string) {
-  fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
-  await fs.promises.mkdir(REPORTS_DIR);
-
-  await traverseDirs(libPath, validateAudioFile);
-
-  console.log(
-    `\nProcessed all ${tracksTotal} tracks (${SUPPORTED_CODEC.join(", ")})`
-  );
 }

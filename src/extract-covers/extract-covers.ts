@@ -1,11 +1,7 @@
 import fs from "fs";
 import sizeof from "image-size";
 import { mmFacade } from "../music-metadata-facade";
-import { parseFile } from "../../node_modules/music-metadata";
-import { processBrokenM3Upaths, validateM3UfilePaths } from "../utils";
 import { COVER_MIN_SIZE } from "../config";
-
-const EXTRACTED_COVERS_DIR = "./build/extracted-covers";
 
 export async function extractCovers(trackPaths: string[], saveTo: string) {
   for (const index of trackPaths.keys()) {
@@ -33,12 +29,4 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
       cover.data
     );
   }
-}
-
-export async function init(m3uFilePath: string) {
-  await fs.promises.rm(EXTRACTED_COVERS_DIR, { recursive: true, force: true });
-  await fs.promises.mkdir(EXTRACTED_COVERS_DIR);
-  const paths = await validateM3UfilePaths(m3uFilePath);
-  await processBrokenM3Upaths(paths.broken);
-  await extractCovers(paths.ok, EXTRACTED_COVERS_DIR);
 }

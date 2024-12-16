@@ -1,4 +1,4 @@
-import { init } from "./extract-covers";
+import { init } from "./init";
 
 export const m3uPathArg = process.argv[2];
 
