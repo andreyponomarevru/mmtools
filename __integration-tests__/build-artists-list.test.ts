@@ -1,6 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
 import { buildArtistsList } from "../src/m3u-to-tracklist/m3u-to-tracklist";
-import { m3uWithAbsolutePaths } from "../src/test-helpers/m3u-playlists";
 
 describe("buildArtistsList", () => {
   it("returns comma-separated list of track artists if they are set in ID3 tags", async () => {

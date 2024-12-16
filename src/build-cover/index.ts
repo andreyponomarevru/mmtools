@@ -1,4 +1,4 @@
-import { init } from "./build-cover";
+import { init } from "./init";
 
 const m3uPathArg = process.argv[2];
 
