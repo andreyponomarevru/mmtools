@@ -22,11 +22,14 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
       );
     }
 
-    await fs.promises.writeFile(
-      `${saveTo}/${index + 1} ${meta.artists?.join(", ")} - ${
-        meta.title
-      }.${imgType}`,
-      cover.data
-    );
+    const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
+    const filename = `${index + 1} ${meta.artists
+      ?.join(", ")
+      .replace(nonSafeCharsRegex, "")} - ${meta.title?.replace(
+      nonSafeCharsRegex,
+      ""
+    )}.${imgType}`;
+
+    await fs.promises.writeFile(`${saveTo}/${filename}`, cover.data);
   }
 }

@@ -16,64 +16,68 @@ jest.mock("fs", () => {
 });
 
 describe("extractCovers", () => {
-  it("throws error if cover is absent", async () => {
-    const parsedTrack = {
-      meta: {} as TracklistLineMeta,
-      cover: null,
-    };
-    const parsedCover = {
-      width: COVER_MIN_SIZE,
-      height: COVER_MIN_SIZE,
-      type: "jpg",
-    };
-    jest.mocked(mmFacade.parseFile).mockResolvedValue(parsedTrack as any);
-    jest.mocked(sizeof.default).mockImplementationOnce(parsedCover as any);
+  const parsedCover = {
+    width: COVER_MIN_SIZE,
+    height: COVER_MIN_SIZE,
+    type: "jpg",
+  };
 
-    const result = () =>
-      extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
+  describe("throws error", () => {
+    it("if cover is absent", async () => {
+      const parsedTrack = {
+        meta: {} as TracklistLineMeta,
+        cover: null,
+      };
 
-    await expect(result).rejects.toThrow("Track has no cover:");
+      jest.mocked(mmFacade.parseFile).mockResolvedValue(parsedTrack as any);
+      jest.mocked(sizeof.default).mockImplementationOnce(parsedCover as any);
+
+      const result = () =>
+        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
+
+      await expect(result).rejects.toThrow("Track has no cover:");
+    });
+
+    it("if cover width and height are both less than COVER_MIN_SIZE", async () => {
+      const parsedTrack = {
+        meta: {} as TracklistLineMeta,
+        cover: { format: "", data: Buffer.from([]) },
+      };
+      const parsedCover = {
+        width: COVER_MIN_SIZE - 1,
+        height: COVER_MIN_SIZE - 1,
+        type: "jpg",
+      };
+      jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
+      jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
+
+      const result = () =>
+        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
+
+      await expect(result).rejects.toThrow("The cover is too small:");
+    });
+
+    it("if cover size can't be determined", async () => {
+      const parsedTrack = {
+        meta: {} as TracklistLineMeta,
+        cover: { format: "", data: Buffer.from([]) },
+      };
+      const parsedCover = {
+        width: undefined,
+        height: undefined,
+        type: undefined,
+      };
+      jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
+      jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
+
+      const result = () =>
+        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
+
+      await expect(result).rejects.toThrow("Can't read image dimensions");
+    });
   });
 
-  it("throws error if cover width and height are both less than COVER_MIN_SIZE", async () => {
-    const parsedTrack = {
-      meta: {} as TracklistLineMeta,
-      cover: { format: "", data: Buffer.from([]) },
-    };
-    const parsedCover = {
-      width: COVER_MIN_SIZE - 1,
-      height: COVER_MIN_SIZE - 1,
-      type: "jpg",
-    };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
-    jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
-
-    const result = () =>
-      extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
-
-    await expect(result).rejects.toThrow("The cover is too small:");
-  });
-
-  it("throws error if cover size can't be determined", async () => {
-    const parsedTrack = {
-      meta: {} as TracklistLineMeta,
-      cover: { format: "", data: Buffer.from([]) },
-    };
-    const parsedCover = {
-      width: undefined,
-      height: undefined,
-      type: undefined,
-    };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
-    jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
-
-    const result = () =>
-      extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
-
-    await expect(result).rejects.toThrow("Can't read image dimensions");
-  });
-
-  it("writes every track's cover from m3u playlist to disk if it exists and it's size is valid", async () => {
+  it("writes every track's cover from m3u playlist to disk", async () => {
     const parsedTrack = {
       meta: {
         artists: ["Artist name 1", "Artist name 2"],
@@ -81,21 +85,40 @@ describe("extractCovers", () => {
       } as TracklistLineMeta,
       cover: { format: "", data: Buffer.from([]) },
     };
-    const parsedCover = {
-      width: COVER_MIN_SIZE,
-      height: COVER_MIN_SIZE,
-      type: "jpg",
-    };
-    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
+    jest
+      .mocked(mmFacade)
+      .parseFile.mockImplementation(() => Promise.resolve(parsedTrack as any));
     jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
-    const writeFIleSpy = jest
+    const writeFileSpy = jest
       .spyOn(fs.promises, "writeFile")
       .mockImplementationOnce(() => Promise.resolve());
 
     await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
 
-    await expect(writeFIleSpy.mock.calls.length).toBe(
+    await expect(writeFileSpy.mock.calls.length).toBe(
       m3uWithAbsolutePaths.parsed.length
+    );
+  });
+
+  it("strips non-safe chars from file name", async () => {
+    const nonSafeChars = "()`~!@#$%^&*-+=|\\{}[]:;\"'<>,.?/_";
+    const parsedTrack = {
+      meta: {
+        artists: [`The Future So${nonSafeChars}und Of London`],
+        title: `Papua New Guinea (Remix Test${nonSafeChars}test)`,
+      } as TracklistLineMeta,
+      cover: { format: "", data: Buffer.from([]) },
+    };
+    jest.mocked(mmFacade).parseFile.mockResolvedValue(parsedTrack as any);
+    jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
+    const writeFileSpy = jest
+      .spyOn(fs.promises, "writeFile")
+      .mockImplementationOnce(() => Promise.resolve());
+
+    await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
+
+    await expect(writeFileSpy.mock.calls[0][0]).toBe(
+      `${EXTRACTED_COVERS_DIR}/1 The Future So-und Of London - Papua New Guinea Remix Test-test.${parsedCover.type}`
     );
   });
 });
