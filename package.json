@@ -15,7 +15,7 @@
     "test:integration": "jest --verbose --detectOpenHandles ./__integration-tests__  --runInBand",
     "test:coverage": "jest --coverage",
     "test:clearjest": "jest --clearCache",
-    "test:ci": "yarn run test:unit && yarn run test:integration"
+    "ci": "yarn run test:unit && yarn run test:integration"
   },
   "dependencies": {
     "image-size": "^1.1.1",
