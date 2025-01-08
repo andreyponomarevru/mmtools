@@ -16,16 +16,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-    strategy:
-      # Disable to prevent exiting on first failed test
-      fail-fast: false
-      # Run 4 job instances to execute tests in parallel
-      # https://www.testmo.com/guides/github-actions-parallel-testing/
-      matrix:
-        # Job instances - make them available as env vars in this job
-        ci_index: [0, 1, 2, 3]
-        ci_total: [4]
-
     steps:
         # This uses the actions/checkout action to clone your repository.
       - name: Checkout code
@@ -44,9 +34,6 @@ jobs:
 
       - name: Run unit-tests
         run: yarn test:ci
-        env:
-          CI_TOTAL: ${{ matrix.ci_total }}
-          CI_INDEX: ${{ matrix.ci_index }}
 
   # deploy:
   #   needs: test
