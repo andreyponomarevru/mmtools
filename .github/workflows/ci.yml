@@ -43,11 +43,10 @@ jobs:
         run: yarn install --immutable
 
       - name: Run unit-tests
-        run: yarn test:unit
+        run: yarn test:ci
         env:
           CI_TOTAL: ${{ matrix.ci_total }}
           CI_INDEX: ${{ matrix.ci_index }}
-
 
   # deploy:
   #   needs: test
