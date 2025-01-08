@@ -17,10 +17,10 @@ jobs:
     steps:
         # This uses the actions/checkout action to clone your repository.
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           # sets up the specified Node version, and
           node-version: ${{ matrix.node-version }}
