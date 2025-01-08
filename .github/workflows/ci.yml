@@ -17,18 +17,18 @@ jobs:
     steps:
         # This uses the actions/checkout action to clone your repository.
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           # sets up the specified Node version, and
           node-version: ${{ matrix.node-version }}
           # caches npm dependencies to speed up the workflow.
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Run unit-tests
-        run: npm test
+        run: yarn test:unit
