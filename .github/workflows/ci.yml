@@ -8,22 +8,17 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-
-    # Allows testing on different Node.js versions (adjust as needed).
-    strategy:
-      matrix:
-        node-version: [20.x]
-    
+   
     steps:
         # This uses the actions/checkout action to clone your repository.
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4
         with:
           # sets up the specified Node version, and
-          node-version: ${{ matrix.node-version }}
+          node-version: 22.x
           # caches npm dependencies to speed up the workflow.
           cache: 'yarn'
 
