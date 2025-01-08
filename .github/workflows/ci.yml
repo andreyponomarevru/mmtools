@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    # Allows testing on different Node.js versions (adjust as needed).
+    strategy:
+      matrix:
+        node-version: [16.x]
+    
+    steps:
+        # This uses the actions/checkout action to clone your repository.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          # sets up the specified Node version, and
+          node-version: ${{ matrix.node-version }}
+          # caches npm dependencies to speed up the workflow.
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit-tests
+        run: npm test
