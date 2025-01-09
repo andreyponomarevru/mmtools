@@ -28,12 +28,14 @@ jobs:
           node-version: 22.x
           # caches npm dependencies to speed up the workflow.
           cache: 'yarn'
+      - name: Run Bash script
+        run: ./ci
+        shell: bash
+      #- name: Install dependencies
+      #  run: yarn install --immutable
 
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Run unit-tests
-        run: yarn test:ci
+      #- name: Run unit-tests
+      #  run: yarn test:ci
 
   # deploy:
   #   needs: test
