@@ -6,12 +6,14 @@ on:
 
 jobs:
 
+  # "build" is the name of the "check" you can add to "Require status checks to pass"
   build:
     runs-on: ubuntu-latest
 
     steps:
       - run: echo "Building ..."
 
+  # "test" is the name of the "check" you can add to "Require status checks to pass"
   test: 
     needs: build
     runs-on: ubuntu-latest
