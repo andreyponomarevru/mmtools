@@ -29,7 +29,9 @@ jobs:
           # caches npm dependencies to speed up the workflow.
           cache: 'yarn'
       - name: Run Bash script
-        run: ./ci
+        run: |
+          chmod 755 ./ci \
+          ./ci
         shell: bash
       #- name: Install dependencies
       #  run: yarn install --immutable
