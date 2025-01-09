@@ -6,12 +6,7 @@ import { isPathExists } from "../src/test-helpers/helpers";
 
 describe("converts m3u into tracklist", () => {
   it("given an .m3u file, creates a .txt file containing data", async () => {
-    jest.spyOn(process, "exit").mockImplementationOnce(() => {
-      throw new Error();
-    });
     await fs.promises.rm(M3U_TRACKLIST, { force: true, recursive: true });
-
-    expect(await isPathExists(M3U_TRACKLIST)).toBe(false);
 
     await init("./__test-data__/m3u-playlists/absolute-paths-saved-in-vlc.m3u");
 
@@ -22,12 +17,7 @@ describe("converts m3u into tracklist", () => {
   });
 
   it("given an .m3u file, creates a file containing properly formatted tracklist", async () => {
-    jest.spyOn(process, "exit").mockImplementationOnce(() => {
-      throw new Error();
-    });
     await fs.promises.rm(M3U_TRACKLIST, { force: true, recursive: true });
-
-    expect(await isPathExists(M3U_TRACKLIST)).toBe(false);
 
     await init("./__test-data__/m3u-playlists/absolute-paths-saved-in-vlc.m3u");
 

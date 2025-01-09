@@ -12,7 +12,7 @@
     "extractcovers": "npx tsx ./src/extract-covers",
     "extracttracklist": "npx tsx ./src/m3u-to-tracklist",
     "test:unit": "jest --verbose --silent --detectOpenHandles ./src",
-    "test:integration": "jest --verbose --detectOpenHandles ./__integration-tests__  --runInBand",
+    "test:integration": "jest --verbose --silent --detectOpenHandles ./__integration-tests__  --runInBand",
     "test:coverage": "jest --coverage",
     "test:clearjest": "jest --clearCache"
   },
