@@ -30,7 +30,7 @@ jobs:
           cache: 'yarn'
       - name: Run Bash script
         run: |
-          chmod 755 ./ci && ./ci
+          chmod 777 ./ci && ./ci
         shell: bash
       #- name: Install dependencies
       #  run: yarn install --immutable
