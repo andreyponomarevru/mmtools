@@ -2,7 +2,7 @@
 
 set -eu -p pipefail
 
-printf '\nEXECUTE CONTINUES INTEGRATION SCRIPT\n'
+printf '\nEXECUTE CONTINUOUS INTEGRATION SCRIPT\n'
 
 printf '\n1. Install package.json dependencies\n\n'
 yarn install --immutable
