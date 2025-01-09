@@ -1,6 +1,6 @@
 import fs from "fs";
 import { validateM3UfilePaths, processBrokenM3Upaths } from "../utils";
-import { M3U_TRACKLIST } from "../config";
+import { BUILD_DIR, M3U_TRACKLIST } from "../config";
 import { validateAudioFile } from "../validate-lib/validate-lib";
 import {
   buildArtistsList,
@@ -16,6 +16,7 @@ export async function init(m3uFilePath: string) {
   for (const path of paths.ok) await validateAudioFile(path);
 
   const artists = await buildArtistsList(paths.ok);
+  await fs.promises.mkdir(BUILD_DIR[process.env.NODE_ENV], { recursive: true });
   await fs.promises.writeFile(M3U_TRACKLIST, `${[...artists].join(" - ")}\n\n`);
 
   const tracklist = await m3uToTracklist(paths.ok, buildTracklistLine);

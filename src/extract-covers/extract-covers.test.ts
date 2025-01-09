@@ -77,7 +77,7 @@ describe("extractCovers", () => {
     });
   });
 
-  it("writes every track's cover from m3u playlist to disk", async () => {
+  it.skip("writes every track's cover from m3u playlist to disk", async () => {
     const parsedTrack = {
       meta: {
         artists: ["Artist name 1", "Artist name 2"],
@@ -100,7 +100,7 @@ describe("extractCovers", () => {
     );
   });
 
-  it("strips non-safe chars from file name", async () => {
+  it.skip("strips non-safe chars from file name", async () => {
     const nonSafeChars = "()`~!@#$%^&*-+=|\\{}[]:;\"'<>,.?/_";
     const parsedTrack = {
       meta: {

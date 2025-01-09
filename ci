@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eu -p pipefail
+
+printf '\nEXECUTE CONTINUOUS INTEGRATION SCRIPT\n'
+
+printf '\n1. Install package.json dependencies\n\n'
+yarn install --immutable
+
+printf '\n2. Run unit tests\n\n'
+yarn run test:unit
+
+printf '\n3. Run integration tests\n\n'
+yarn run test:integration
+
+printf '\n\nDone\n'

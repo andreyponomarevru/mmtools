@@ -5,7 +5,7 @@ import { validateAudioFile, tracksTotal } from "./validate-lib";
 
 export async function init(libPath: string) {
   fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
-  await fs.promises.mkdir(REPORTS_DIR);
+  await fs.promises.mkdir(REPORTS_DIR, { recursive: true });
 
   await traverseDirs(libPath, validateAudioFile);
 

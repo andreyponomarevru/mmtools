@@ -11,11 +11,10 @@
     "buildcover": "npx tsx ./src/build-cover",
     "extractcovers": "npx tsx ./src/extract-covers",
     "extracttracklist": "npx tsx ./src/m3u-to-tracklist",
-    "test:unit": "jest --verbose --detectOpenHandles ./src",
-    "test:integration": "jest --verbose --detectOpenHandles ./__integration-tests__  --runInBand",
+    "test:unit": "jest --verbose --silent --detectOpenHandles ./src",
+    "test:integration": "jest --verbose --silent --detectOpenHandles ./__integration-tests__  --runInBand",
     "test:coverage": "jest --coverage",
-    "test:clearjest": "jest --clearCache",
-    "test:ci": "yarn run test:unit && yarn run test:integration"
+    "test:clearjest": "jest --clearCache"
   },
   "dependencies": {
     "image-size": "^1.1.1",
