@@ -11,7 +11,7 @@
     "buildcover": "npx tsx ./src/build-cover",
     "extractcovers": "npx tsx ./src/extract-covers",
     "extracttracklist": "npx tsx ./src/m3u-to-tracklist",
-    "test:unit": "jest --testMatch='**/*.unit.test.ts' --verbose --detectOpenHandles --watchAll",
+    "test:unit": "jest --testMatch='**/*.unit.test.ts' --verbose --detectOpenHandles",
     "test:int": "jest --testMatch='**/*.int.test.ts' --verbose --silent --detectOpenHandles  --runInBand",
     "test:coverage": "jest --coverage",
     "test:clearjest": "jest --clearCache"
