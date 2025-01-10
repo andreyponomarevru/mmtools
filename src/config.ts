@@ -11,7 +11,7 @@ export const SUPPORTED_CODEC = ["flac", "mp3"];
 export const COVER_MIN_SIZE = 599;
 export const MIN_BITRATE = 320000;
 
-export const BUILD_DIR = { production: "./build", test: "./test-build" };
+export const BUILD_DIR = { production: "./build", test: "/tmp" };
 
 export const REPORTS_DIR = `${BUILD_DIR[process.env.NODE_ENV]}/reports`;
 
