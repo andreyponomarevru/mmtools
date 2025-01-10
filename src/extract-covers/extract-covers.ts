@@ -1,12 +1,14 @@
 import fs from "fs";
+import path from "path";
 import sizeof from "image-size";
 import { mmFacade } from "../music-metadata-facade";
 import { COVER_MIN_SIZE } from "../config";
 
+export const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
+
 export async function extractCovers(trackPaths: string[], saveTo: string) {
   for (const index of trackPaths.keys()) {
     const tPath = trackPaths[index];
-
     const { meta, cover } = await mmFacade.parseFile(tPath);
 
     if (cover === null) {
@@ -22,14 +24,15 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
       );
     }
 
-    const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
-    const filename = `${index + 1} ${meta.artists
+    const trackNumber = index + 1;
+    const filename = `${trackNumber} ${meta.artists
       ?.join(", ")
       .replace(nonSafeCharsRegex, "")} - ${meta.title?.replace(
       nonSafeCharsRegex,
       ""
     )}.${imgType}`;
 
+    await fs.promises.mkdir(saveTo, { recursive: true });
     await fs.promises.writeFile(`${saveTo}/${filename}`, cover.data);
   }
 }

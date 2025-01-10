@@ -77,30 +77,7 @@ describe("extractCovers", () => {
     });
   });
 
-  it.skip("writes every track's cover from m3u playlist to disk", async () => {
-    const parsedTrack = {
-      meta: {
-        artists: ["Artist name 1", "Artist name 2"],
-        title: "Song Title",
-      } as TracklistLineMeta,
-      cover: { format: "", data: Buffer.from([]) },
-    };
-    jest
-      .mocked(mmFacade)
-      .parseFile.mockImplementation(() => Promise.resolve(parsedTrack as any));
-    jest.mocked(sizeof).default.mockReturnValue(parsedCover as any);
-    const writeFileSpy = jest
-      .spyOn(fs.promises, "writeFile")
-      .mockImplementationOnce(() => Promise.resolve());
-
-    await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
-
-    await expect(writeFileSpy.mock.calls.length).toBe(
-      m3uWithAbsolutePaths.parsed.length
-    );
-  });
-
-  it.skip("strips non-safe chars from file name", async () => {
+  it("strips non-safe chars from file name", async () => {
     const nonSafeChars = "()`~!@#$%^&*-+=|\\{}[]:;\"'<>,.?/_";
     const parsedTrack = {
       meta: {
