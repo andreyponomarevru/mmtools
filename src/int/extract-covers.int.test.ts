@@ -5,26 +5,18 @@ import { extractCovers } from "../extract-covers/extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
 
 describe("extractCovers", () => {
-  it("writes every track's cover from m3u playlist to disk", async () => {
+  it("given an array of audio files paths, saves every file's cover to disk", async () => {
+    await fs.promises.rm(EXTRACTED_COVERS_DIR, { recursive: true });
+
     await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
 
     const savedCovers = await fs.promises.readdir(EXTRACTED_COVERS_DIR);
-    //expect(savedCovers.length).toBe(4);
-    console.log("-------------------------------", savedCovers);
 
-    /*expect(savedCovers).toEqual(`${EXTRACTED_COVERS_DIR}/1 ${parsedTrack.meta.artists?.join(" ")} - ${
-          parsedTrack.meta.title
-        }.jpg`,
-        */
-    /*
-        `${EXTRACTED_COVERS_DIR}/2 ${parsedTrack.meta.artists?.join(" ")} - ${
-          parsedTrack.meta.title
-        }.jpg`,
-        `${EXTRACTED_COVERS_DIR}/3 ${parsedTrack.meta.artists?.join(" ")} - ${
-          parsedTrack.meta.title
-        }.jpg`,
-              `${EXTRACTED_COVERS_DIR}/4 ${parsedTrack.meta.artists?.join(" ")} - ${
-          parsedTrack.meta.title
-        }.jpg`*/
+    expect(savedCovers).toEqual([
+      "1 carlos nio  friends - woo acknowledgement.jpg",
+      "2 p real - undefined.jpg",
+      "3 miguel migs - so far rasmus fabers farplane radio edit.jpg",
+      "4 undefined - the legend of haziz.jpg",
+    ]);
   });
 });

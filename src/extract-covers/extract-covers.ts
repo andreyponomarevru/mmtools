@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import sizeof from "image-size";
 import { mmFacade } from "../music-metadata-facade";
 import { COVER_MIN_SIZE } from "../config";
@@ -25,13 +24,12 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
     }
 
     const trackNumber = index + 1;
-    const filename = `${trackNumber} ${meta.artists
-      ?.join(", ")
-      .replace(nonSafeCharsRegex, "")} - ${meta.title?.replace(
-      nonSafeCharsRegex,
-      ""
-    )}.${imgType}`;
+    const artists = meta.artists?.join(", ").replace(nonSafeCharsRegex, "");
+    const title = meta.title?.replace(nonSafeCharsRegex, "");
+    const filename =
+      `${trackNumber} ${artists} - ${title}.${imgType}`.toLowerCase();
 
+    // Create dir and don't error if it exists
     await fs.promises.mkdir(saveTo, { recursive: true });
     await fs.promises.writeFile(`${saveTo}/${filename}`, cover.data);
   }
