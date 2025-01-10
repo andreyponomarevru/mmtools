@@ -1,14 +1,14 @@
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
-import { init } from "../src/m3u-to-tracklist/init";
-import { M3U_TRACKLIST } from "../src/config";
-import { isPathExists } from "../src/test-helpers/helpers";
+import { init } from "../m3u-to-tracklist/init";
+import { M3U_TRACKLIST } from "../config";
+import { isPathExists } from "../test-helpers/helpers";
 
 describe("converts m3u into tracklist", () => {
   it("given an .m3u file, creates a .txt file containing data", async () => {
     await fs.promises.rm(M3U_TRACKLIST, { force: true, recursive: true });
 
-    await init("./__test-data__/m3u-playlists/absolute-paths-saved-in-vlc.m3u");
+    await init("./test-data/m3u-playlists/absolute-paths-saved-in-vlc.m3u");
 
     expect(await isPathExists(M3U_TRACKLIST)).toBe(true);
 
@@ -19,7 +19,7 @@ describe("converts m3u into tracklist", () => {
   it("given an .m3u file, creates a file containing properly formatted tracklist", async () => {
     await fs.promises.rm(M3U_TRACKLIST, { force: true, recursive: true });
 
-    await init("./__test-data__/m3u-playlists/absolute-paths-saved-in-vlc.m3u");
+    await init("./test-data/m3u-playlists/absolute-paths-saved-in-vlc.m3u");
 
     const tracklist = await fs.promises.readFile(M3U_TRACKLIST);
     const convertedTracklist = `Carlos Niño & Friends - P. Real - Miguel Migs

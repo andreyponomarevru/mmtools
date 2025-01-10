@@ -80,5 +80,5 @@
   },
   "compileOnSave": true,
   "include": ["src/**/*.ts", "src/environment.d.ts"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": ["node_modules", "**/*.unit.test.ts", "**/*.int.test.ts"]
 }

@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
-import { init } from "../src/validate-lib/init";
+import { init } from "../validate-lib/init";
 import {
   REPORT_BAD_ARTISTS,
   REPORT_BAD_COVERS,
@@ -11,11 +11,11 @@ import {
   REPORT_LOW_BITRATE,
   REPORT_NO_BPM,
   REPORTS_DIR,
-} from "../src/config";
-import { isPathExists } from "../src/test-helpers/helpers";
+} from "../config";
+import { isPathExists } from "../test-helpers/helpers";
 
-const PATH_TO_INVALID_TRACKS = "./__test-data__/music-lib/invalid-tags";
-const PATH_TO_VALID_TRACKS = "./__test-data__/music-lib/valid-tags";
+const PATH_TO_INVALID_TRACKS = "./test-data/music-lib/invalid-tags";
+const PATH_TO_VALID_TRACKS = "./test-data/music-lib/valid-tags";
 
 describe("validates library", () => {
   it("creates .log file for each type of library constraint", async () => {
@@ -23,7 +23,7 @@ describe("validates library", () => {
 
     expect(await isPathExists(REPORTS_DIR)).toBe(false);
 
-    await init("./__test-data__/music-lib");
+    await init("./test-data/music-lib");
 
     expect(await isPathExists(REPORTS_DIR)).toBe(true);
 
@@ -68,7 +68,7 @@ describe("validates library", () => {
       expect(
         await fs.promises.readFile(REPORT_BAD_COVERS, { encoding: "utf-8" })
       ).toBe(
-        "__test-data__/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac - no cover\n"
+        "test-data/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac - no cover\n"
       );
     });
 
@@ -82,7 +82,7 @@ describe("validates library", () => {
           encoding: "utf-8",
         })
       ).toBe(
-        `__test-data__/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3 - Invalid Genre\n__test-data__/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac - Hurum\n__test-data__/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac - Burum\n`
+        `test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3 - Invalid Genre\ntest-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac - Hurum\ntest-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac - Burum\n`
       );
     });
 
@@ -94,7 +94,7 @@ describe("validates library", () => {
       expect(
         await fs.promises.readFile(REPORT_BAD_TITLE, { encoding: "utf-8" })
       ).toBe(
-        "__test-data__/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3\n"
+        "test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3\n"
       );
     });
 
@@ -106,7 +106,7 @@ describe("validates library", () => {
       expect(
         await fs.promises.readFile(REPORT_NO_BPM, { encoding: "utf-8" })
       ).toBe(
-        "__test-data__/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac\n"
+        "test-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac\n"
       );
     });
 
@@ -118,7 +118,7 @@ describe("validates library", () => {
       expect(
         await fs.promises.readFile(REPORT_BAD_ARTISTS, { encoding: "utf-8" })
       ).toBe(
-        "__test-data__/music-lib/invalid-tags/Various - 10/02. The Zenmenn - The Legend Of Haziz.flac\n"
+        "test-data/music-lib/invalid-tags/Various - 10/02. The Zenmenn - The Legend Of Haziz.flac\n"
       );
     });
 
@@ -130,7 +130,7 @@ describe("validates library", () => {
       expect(
         await fs.promises.readFile(REPORT_BAD_YEAR, { encoding: "utf-8" })
       ).toBe(
-        "__test-data__/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac - undefined\n"
+        "test-data/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac - undefined\n"
       );
     });
 
@@ -142,7 +142,7 @@ describe("validates library", () => {
       expect(
         await fs.promises.readFile(REPORT_LOW_BITRATE, { encoding: "utf-8" })
       ).toBe(
-        "128kbps - __test-data__/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3\n"
+        "128kbps - test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3\n"
       );
     });
   });

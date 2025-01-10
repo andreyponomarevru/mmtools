@@ -3,18 +3,18 @@ export const m3uWithAbsolutePaths = {
     #EXTM3U
     #EXTM3U
     #EXTINF:1,Carlos Niño & Friends - Woo, Acknowledgement
-    file:///mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/Carlos%20Nino%20&%20Friends%20-%20Woo,%20Acknowledgement.flac
+    file:///mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/invalid-tags/Carlos%20Nino%20&%20Friends%20-%20Woo,%20Acknowledgement.flac
     #EXTINF:2,P. Real - Dedicated 2 U
-    file:///mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3
+    file:///mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3
     #EXTINF:1,Miguel Migs - So Far (Rasmus Faber’s Farplane radio edit)
-    file:///mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/06%20-%20Miguel%20Migs%20-%20So%20Far%20(Rasmus%20Faber%E2%80%99s%20Farplane%20radio%20edit)%20%5B16-44%5D.flac
+    file:///mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/valid-tags/Those%20Things%20Deluxe%20%282007%29/CD%202/06%20-%20Miguel%20Migs%20-%20So%20Far%20%28Rasmus%20Faber%E2%80%99s%20Farplane%20radio%20edit%29%20%5B16-44%5D.flac
     #EXTINF:1,The Zenmenn - The Legend Of Haziz
-    file:///mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/02.%20The%20Zenmenn%20-%20The%20Legend%20Of%20Haziz.flac`,
+    file:///mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/invalid-tags/Various%20-%2010/02.%20The%20Zenmenn%20-%20The%20Legend%20Of%20Haziz.flac`,
   parsed: [
-    "/mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/Carlos Nino & Friends - Woo, Acknowledgement.flac",
-    "/mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3",
-    "/mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/06 - Miguel Migs - So Far (Rasmus Faber’s Farplane radio edit) [16-44].flac",
-    "/mnt/CE64EB6A64EB53AD/music-lib/js/__integration-tests__/test-data/music-lib/02. The Zenmenn - The Legend Of Haziz.flac",
+    "/mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac",
+    "/mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3",
+    "/mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/valid-tags/Those Things Deluxe (2007)/CD 2/06 - Miguel Migs - So Far (Rasmus Faber’s Farplane radio edit) [16-44].flac",
+    "/mnt/CE64EB6A64EB53AD/music-lib/js/test-data/music-lib/invalid-tags/Various - 10/02. The Zenmenn - The Legend Of Haziz.flac",
   ],
 };
 
