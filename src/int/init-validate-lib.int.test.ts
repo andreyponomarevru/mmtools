@@ -11,7 +11,7 @@ import {
   REPORT_LOW_BITRATE,
   REPORT_NO_BPM,
   REPORTS_DIR,
-} from "../config";
+} from "../config/constants";
 import { isPathExists } from "../test-helpers/helpers";
 
 const PATH_TO_INVALID_TRACKS = "./test-data/music-lib/invalid-tags";

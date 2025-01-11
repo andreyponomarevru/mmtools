@@ -1,6 +1,6 @@
 import fs from "fs";
 import { traverseDirs } from "../utils";
-import { SUPPORTED_CODEC, REPORTS_DIR } from "../config";
+import { SUPPORTED_CODEC, REPORTS_DIR } from "../config/constants";
 import { validateAudioFile, tracksTotal } from "./validate-lib";
 
 export async function init(libPath: string) {

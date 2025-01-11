@@ -1,7 +1,7 @@
 import fs from "fs";
 import { mmFacade } from "../music-metadata-facade";
 import { parseID3V2Array } from "../utils";
-import { REPORTS_DIR } from "../config";
+import { REPORTS_DIR } from "../config/constants";
 import {
   checkCover,
   checkArtists,

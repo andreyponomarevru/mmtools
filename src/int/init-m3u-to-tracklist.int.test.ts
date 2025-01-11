@@ -1,7 +1,7 @@
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
 import { init } from "../m3u-to-tracklist/init";
-import { M3U_TRACKLIST } from "../config";
+import { M3U_TRACKLIST } from "../config/constants";
 import { isPathExists } from "../test-helpers/helpers";
 
 describe("converts m3u into tracklist", () => {

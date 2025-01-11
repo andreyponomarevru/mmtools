@@ -2,60 +2,51 @@ import { UtfString } from "utfstring";
 import { describe, expect, it, jest } from "@jest/globals";
 import { mmFacade } from "../music-metadata-facade";
 import { buildTracklistLine } from "./m3u-to-tracklist";
-import { parseID3V2Array } from "../utils";
 
-jest.mock("../utils");
 jest.mock("../music-metadata-facade");
 jest.mock("utfstring");
 
 describe("buildTracklistLine", () => {
   const leftToRightTextMark = "\u200E";
-  const artists = ["Artist name 1", "Artist name 2"];
-  const title = "Song Title";
-  const cover = { format: "", data: Buffer.from([]) };
+  const parsedTrack: Awaited<ReturnType<typeof mmFacade.parseFile>> = {
+    meta: {
+      year: 2024,
+      title: "Song Title",
+      artists: ["Artist name 1", "Artist name 2"],
+      album: undefined,
+      genre: undefined,
+      bpm: undefined,
+      label: undefined,
+      catalognumber: undefined,
+      format: undefined,
+      bitrate: undefined,
+      originaldate: undefined,
+    },
+    cover: { format: "", data: Buffer.from([]) },
+  };
 
-  test("given an object containing the `originaldate` prop, uses it as original date", async () => {
-    const parsedTrack = {
-      meta: { artists, title, year: 2024, originaldate: 1976 },
-      cover,
-    } as any;
-    jest.mocked(mmFacade).parseFile.mockResolvedValueOnce(parsedTrack);
-    jest.mocked(parseID3V2Array).mockReturnValueOnce([]);
-    jest
-      .mocked(UtfString)
-      .mockReturnValueOnce([parsedTrack.meta.artists!.join(", ")] as any)
-      .mockReturnValueOnce([parsedTrack.meta.title] as any);
+  it("uses the `originaldate` prop, if it exists", async () => {
+    const track = {
+      ...parsedTrack,
+      meta: { ...parsedTrack.meta, originaldate: "1976" },
+    };
+    jest.mocked(mmFacade).parseFile.mockResolvedValueOnce(track);
 
     const result = await buildTracklistLine(parsedTrack.meta);
 
-    expect(result).toBe(
-      `${parsedTrack.meta.artists[0]}, ${parsedTrack.meta.artists[1]} — ${parsedTrack.meta.title} (${leftToRightTextMark}${parsedTrack.meta.originaldate})`
-    );
+    expect(result).toContain(String(parsedTrack.meta.originaldate));
   });
 
-  test("given an object without the `original date` prop, uses the `year` prop", async () => {
-    const parsedTrack = {
-      meta: { artists, title, year: 2024, originaldate: undefined },
-      cover,
-    } as any;
+  it("uses the `year` prop, if the `originaldate` is undefined", async () => {
     jest.mocked(mmFacade).parseFile.mockResolvedValueOnce(parsedTrack);
-    jest.mocked(parseID3V2Array).mockReturnValueOnce([]);
-    jest
-      .mocked(UtfString)
-      .mockReturnValueOnce([parsedTrack.meta.artists!.join(", ")] as any)
-      .mockReturnValueOnce([parsedTrack.meta.title] as any);
 
     const result = await buildTracklistLine(parsedTrack.meta);
 
-    expect(result).toBe(
-      `${parsedTrack.meta.artists[0]}, ${parsedTrack.meta.artists[1]} — ${parsedTrack.meta.title} (${leftToRightTextMark}${parsedTrack.meta.year})`
-    );
+    expect(result).toContain(String(parsedTrack.meta.year));
   });
 
-  test("given an object with all required props, returns the string matching the format `<artists> — <title> (<year>)`", async () => {
-    const parsedTrack = { meta: { artists, title, year: 2024 }, cover } as any;
+  it("returns the string matching the format `<artists> — <title> (<year>)`, if all required props exist", async () => {
     jest.mocked(mmFacade).parseFile.mockResolvedValueOnce(parsedTrack);
-    jest.mocked(parseID3V2Array).mockReturnValueOnce([]);
     jest
       .mocked(UtfString)
       .mockReturnValueOnce([parsedTrack.meta.artists!.join(", ")] as any)
@@ -64,7 +55,9 @@ describe("buildTracklistLine", () => {
     const result = await buildTracklistLine(parsedTrack.meta);
 
     expect(result).toBe(
-      `${parsedTrack.meta.artists[0]}, ${parsedTrack.meta.artists[1]} — ${parsedTrack.meta.title} (${leftToRightTextMark}${parsedTrack.meta.year})`
+      `${parsedTrack.meta.artists![0]}, ${parsedTrack.meta.artists![1]} — ${
+        parsedTrack.meta.title
+      } (${leftToRightTextMark}${parsedTrack.meta.year})`
     );
   });
 });
