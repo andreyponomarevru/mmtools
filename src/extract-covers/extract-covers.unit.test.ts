@@ -23,7 +23,7 @@ describe("extractCovers", () => {
   };
 
   describe("throws error", () => {
-    it("if cover is absent", async () => {
+    test("if cover is absent", async () => {
       const parsedTrack = {
         meta: {} as TracklistLineMeta,
         cover: null,
@@ -38,7 +38,7 @@ describe("extractCovers", () => {
       await expect(result).rejects.toThrow("Track has no cover:");
     });
 
-    it("if cover width and height are both less than COVER_MIN_SIZE", async () => {
+    test("if cover width and height are both less than COVER_MIN_SIZE", async () => {
       const parsedTrack = {
         meta: {} as TracklistLineMeta,
         cover: { format: "", data: Buffer.from([]) },
@@ -57,7 +57,7 @@ describe("extractCovers", () => {
       await expect(result).rejects.toThrow("The cover is too small:");
     });
 
-    it("if cover size can't be determined", async () => {
+    test("if cover size can't be determined", async () => {
       const parsedTrack = {
         meta: {} as TracklistLineMeta,
         cover: { format: "", data: Buffer.from([]) },
@@ -77,7 +77,7 @@ describe("extractCovers", () => {
     });
   });
 
-  it("strips non-safe chars from file name", async () => {
+  it("strips non-safe chars from file name if they are present", async () => {
     const nonSafeChars = "()`~!@#$%^&*-+=|\\{}[]:;\"'<>,.?/_";
     const parsedTrack = {
       meta: {

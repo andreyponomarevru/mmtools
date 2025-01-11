@@ -14,7 +14,7 @@ describe("buildTracklistLine", () => {
   const title = "Song Title";
   const cover = { format: "", data: Buffer.from([]) };
 
-  it("uses the `originaldate` ID3 tag if it exists", async () => {
+  test("given an object containing the `originaldate` prop, uses it as original date", async () => {
     const parsedTrack = {
       meta: { artists, title, year: 2024, originaldate: 1976 },
       cover,
@@ -33,7 +33,7 @@ describe("buildTracklistLine", () => {
     );
   });
 
-  it("uses the `year` ID3 tag if the `original date` ID3 tag is absent", async () => {
+  test("given an object without the `original date` prop, uses the `year` prop", async () => {
     const parsedTrack = {
       meta: { artists, title, year: 2024, originaldate: undefined },
       cover,
@@ -52,7 +52,7 @@ describe("buildTracklistLine", () => {
     );
   });
 
-  it("returns the line corresponding to the format `<artists> — <title> (<year>)`", async () => {
+  test("given an object with all required props, returns the string matching the format `<artists> — <title> (<year>)`", async () => {
     const parsedTrack = { meta: { artists, title, year: 2024 }, cover } as any;
     jest.mocked(mmFacade).parseFile.mockResolvedValueOnce(parsedTrack);
     jest.mocked(parseID3V2Array).mockReturnValueOnce([]);
