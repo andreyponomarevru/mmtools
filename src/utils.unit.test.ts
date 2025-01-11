@@ -15,43 +15,41 @@ import {
 } from "./test-helpers/m3u-playlists";
 
 describe("parseID3V2Array", () => {
-  it("returns an array parsed", () => {
+  it("given an array of strings, returns an array parsed", () => {
     const genres = ["Ambient", "Psychedelic Rock", "Jungle"];
     const result = parseID3V2Array(genres);
 
     expect(result).toEqual(genres);
   });
 
-  describe("returns an array which", () => {
-    it("is empty if empty array is passed", () => {
-      const result = parseID3V2Array([]);
+  it("given an empty array, returns an empty array", () => {
+    const result = parseID3V2Array([]);
 
-      expect(result).toEqual([]);
-    });
+    expect(result).toEqual([]);
+  });
 
-    it("contains only unique items, if an array containing duplicates is passed", () => {
-      const result = parseID3V2Array([
-        "Ambient",
-        "Downtempo",
-        "Rock",
-        "Downtempo",
-        "Rock",
-      ]);
+  it("given an array containing duplicates, returns only unique items", () => {
+    const result = parseID3V2Array([
+      "Ambient",
+      "Downtempo",
+      "Rock",
+      "Downtempo",
+      "Rock",
+    ]);
 
-      expect(result).toEqual(["Ambient", "Downtempo", "Rock"]);
-    });
+    expect(result).toEqual(["Ambient", "Downtempo", "Rock"]);
+  });
 
-    it("doesn't contain an empty string items", () => {
-      const result = parseID3V2Array([" ", "House", "   ", "Pop", "    "]);
+  it("given an array containing empty string items, filters them out", () => {
+    const result = parseID3V2Array([" ", "House", "   ", "Pop", "    "]);
 
-      expect(result).toEqual(["House", "Pop"]);
-    });
+    expect(result).toEqual(["House", "Pop"]);
+  });
 
-    it("contains all items trimmed, if there are blank spaces around string", () => {
-      const result = parseID3V2Array(["   Ambient", "Rock  ", "   House    "]);
+  it("given an array containing strings with blank spaces around them, returns all items trimmed", () => {
+    const result = parseID3V2Array(["   Ambient", "Rock  ", "   House    "]);
 
-      expect(result).toEqual(["Ambient", "Rock", "House"]);
-    });
+    expect(result).toEqual(["Ambient", "Rock", "House"]);
   });
 });
 
@@ -60,7 +58,7 @@ describe("isValidFileExtension", () => {
     jest.resetModules();
   });
 
-  it("returns 'true' if the file extension is valid", async () => {
+  test("given a file path with a valid file extension, returns true", async () => {
     jest.doMock("./config", () => ({ SUPPORTED_CODEC: ["aiff", "mp3"] }));
     jest.spyOn(path, "extname").mockReturnValue(".aiff");
     const { isValidFileExtension } = await import("./utils");
@@ -70,7 +68,7 @@ describe("isValidFileExtension", () => {
     expect(result).toBe(true);
   });
 
-  it("returns 'false' if the file extension is invalid", async () => {
+  test("given a file path with an invalid file extension, returns false", async () => {
     jest.doMock("./config", () => ({ SUPPORTED_CODEC: ["aiff", "mp3"] }));
     jest.spyOn(path, "extname").mockReturnValue(".ogg");
     const { isValidFileExtension } = await import("./utils");
@@ -83,21 +81,21 @@ describe("isValidFileExtension", () => {
 
 describe("extractFilePathsFromM3U", () => {
   describe("extracts file paths from m3u", () => {
-    it("when m3u contains absolute file paths", () => {
+    test("when m3u contains absolute file paths", () => {
       const result = extractFilePathsFromM3U(m3uWithAbsolutePaths.m3u);
 
       expect(result.length).toBe(m3uWithAbsolutePaths.parsed.length);
       expect(result).toEqual(m3uWithAbsolutePaths.parsed);
     });
 
-    it("when m3u contains file names with non-latin chars", () => {
+    test("when m3u contains file names with non-latin chars", () => {
       const result = extractFilePathsFromM3U(m3uWithNonLatinChars.m3u);
 
       expect(result.length).toBe(m3uWithNonLatinChars.parsed.length);
       expect(result).toEqual(m3uWithNonLatinChars.parsed);
     });
 
-    it("when m3u has been saved in VLC and contains relative file paths", () => {
+    test("when m3u has been saved in VLC and contains relative file paths", () => {
       const result = extractFilePathsFromM3U(
         m3uWithRelativePathsSavedInVLC.m3u
       );
@@ -106,7 +104,7 @@ describe("extractFilePathsFromM3U", () => {
       expect(result).toEqual(m3uWithRelativePathsSavedInVLC.parsed);
     });
 
-    it("when m3u has been saved in Quod Libet and contains relative file paths", () => {
+    test("when m3u has been saved in Quod Libet and contains relative file paths", () => {
       const result = extractFilePathsFromM3U(
         m3uWithRelativePathsSavedInQuodLibet.m3u
       );
@@ -120,7 +118,7 @@ describe("extractFilePathsFromM3U", () => {
 });
 
 describe("validateM3UfilePaths", () => {
-  it("if file(s) exist, returns file paths as valid", async () => {
+  test("if file(s) exist, returns file paths as valid", async () => {
     jest
       .spyOn(fs.promises, "readFile")
       .mockResolvedValue(m3uWithAbsolutePaths.m3u);
@@ -131,7 +129,7 @@ describe("validateM3UfilePaths", () => {
     expect(result).toEqual({ broken: [], ok: m3uWithAbsolutePaths.parsed });
   });
 
-  it("if file(s) don't exist, returns file paths as broken", async () => {
+  test("if file(s) don't exist, returns file paths as broken", async () => {
     jest
       .spyOn(fs.promises, "readFile")
       .mockResolvedValue(m3uWithAbsolutePaths.m3u);
@@ -144,7 +142,7 @@ describe("validateM3UfilePaths", () => {
 });
 
 describe("processBrokenM3Upaths", () => {
-  it("exits process if there are broken paths", () => {
+  test("if there are broken paths, exits process", () => {
     jest.spyOn(console, "error").mockImplementationOnce(() => {});
     const mockExit = jest
       .spyOn(process, "exit")
@@ -158,7 +156,7 @@ describe("processBrokenM3Upaths", () => {
     expect(mockExit.mock.calls.length).toBe(1);
   });
 
-  it("doesn't exit process if there are no broken paths", () => {
+  test("if there are no broken paths, doesn't exit process", () => {
     const mockExit = jest.spyOn(process, "exit").mockImplementationOnce(() => {
       throw new Error();
     });

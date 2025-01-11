@@ -32,13 +32,13 @@ describe("checkCover", () => {
       .mockImplementationOnce(() => Promise.resolve());
   });
 
-  it("appends error to file if cover is absent", async () => {
+  it("if cover is absent, appends error to file", async () => {
     await checkCover(filePath, null);
 
     expect(appendFileMock.mock.calls.length).toBe(1);
   });
 
-  it("appends error to file if cover width and height can't be determined", async () => {
+  it("if cover width and height can't be determined, appends error to file", async () => {
     jest.spyOn(fs.promises, "appendFile").mockResolvedValueOnce();
     jest.mocked(sizeof).default.mockReturnValueOnce({
       width: undefined,
@@ -50,7 +50,7 @@ describe("checkCover", () => {
     expect(appendFileMock.mock.calls.length).toBe(1);
   });
 
-  it("doesn't append error to file if cover height and width are both greater than COVER_MIN_SIZE", async () => {
+  it("if cover height and width are both greater than COVER_MIN_SIZE, doesn't append error to file", async () => {
     const appendFileSpy = jest
       .spyOn(fs.promises, "appendFile")
       .mockResolvedValueOnce();
@@ -64,7 +64,7 @@ describe("checkCover", () => {
     expect(appendFileSpy.mock.calls.length).toBe(0);
   });
 
-  it("doesn't append error to file if cover height is greater than COVER_MIN_SIZE", async () => {
+  it("if cover height is greater than COVER_MIN_SIZE, doesn't append error to file", async () => {
     const appendFileSpy = jest
       .spyOn(fs.promises, "appendFile")
       .mockResolvedValueOnce();
@@ -78,7 +78,7 @@ describe("checkCover", () => {
     expect(appendFileSpy.mock.calls.length).toBe(0);
   });
 
-  it("doesn't append error to file if cover width is greater than COVER_MIN_SIZE", async () => {
+  it("if cover width is greater than COVER_MIN_SIZE, doesn't append error to file", async () => {
     const appendFileSpy = jest
       .spyOn(fs.promises, "appendFile")
       .mockResolvedValueOnce();
@@ -92,7 +92,7 @@ describe("checkCover", () => {
     expect(appendFileSpy.mock.calls.length).toBe(0);
   });
 
-  it("doesn't append error to file if cover height and width are both equal to COVER_MIN_SIZE", async () => {
+  it("if cover height and width are both equal to COVER_MIN_SIZE, doesn't append error to file", async () => {
     jest.mocked(sizeof).default.mockReturnValueOnce({
       width: COVER_MIN_SIZE,
       height: COVER_MIN_SIZE,
@@ -103,7 +103,7 @@ describe("checkCover", () => {
     expect(appendFileMock.mock.calls.length).toBe(0);
   });
 
-  it("doesn't appends error to file if only cover height is less than COVER_MIN_SIZE", async () => {
+  it("if only height is less than COVER_MIN_SIZE, doesn't appends error to file", async () => {
     jest.mocked(sizeof).default.mockReturnValueOnce({
       width: COVER_MIN_SIZE,
       height: COVER_MIN_SIZE - 1,
@@ -114,7 +114,7 @@ describe("checkCover", () => {
     expect(appendFileMock.mock.calls.length).toBe(0);
   });
 
-  it("doesn't append error to file if only cover width is less than COVER_MIN_SIZE", async () => {
+  it("if only width is less than COVER_MIN_SIZE, doesn't append error to file", async () => {
     jest.mocked(sizeof).default.mockReturnValueOnce({
       width: COVER_MIN_SIZE - 1,
       height: COVER_MIN_SIZE,
@@ -125,7 +125,7 @@ describe("checkCover", () => {
     expect(appendFileMock.mock.calls.length).toBe(0);
   });
 
-  it("appends error to file if cover width and cover height are both less than COVER_MIN_SIZE", async () => {
+  it("if width and height are both less than COVER_MIN_SIZE, appends error to file", async () => {
     jest.mocked(sizeof).default.mockReturnValueOnce({
       width: COVER_MIN_SIZE - 1,
       height: COVER_MIN_SIZE - 1,
