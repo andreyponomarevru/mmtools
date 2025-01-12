@@ -1,7 +1,7 @@
 import fs from "fs";
 import sizeof from "image-size";
 import { mmFacade } from "../music-metadata-facade";
-import { COVER_MIN_SIZE } from "../config";
+import { COVER_MIN_SIZE } from "../config/constants";
 
 export const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
 
@@ -29,7 +29,7 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
     const filename =
       `${trackNumber} ${artists} - ${title}.${imgType}`.toLowerCase();
 
-    // Create dir and don't error if it exists
+    // "{ recursive: true}" is required to avoid an error if dir exists
     await fs.promises.mkdir(saveTo, { recursive: true });
     await fs.promises.writeFile(`${saveTo}/${filename}`, cover.data);
   }

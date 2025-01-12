@@ -1,6 +1,6 @@
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
-import { EXTRACTED_COVERS_DIR } from "../config";
+import { EXTRACTED_COVERS_DIR } from "../config/constants";
 import { extractCovers } from "../extract-covers/extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
 

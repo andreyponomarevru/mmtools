@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { SUPPORTED_CODEC } from "./config";
+import { SUPPORTED_CODEC } from "./config/constants";
 
 export function parseID3V2Array(arr: string[]) {
   return arr.length > 0
@@ -10,10 +10,13 @@ export function parseID3V2Array(arr: string[]) {
     : [];
 }
 
-export function isValidFileExtension(filePath: string) {
+export function isValidFileExtension(
+  filePath: string,
+  validExtensions: string[]
+) {
   const extension = path.extname(filePath).slice(1).toLowerCase();
 
-  return SUPPORTED_CODEC.includes(extension);
+  return validExtensions.includes(extension);
 }
 
 export async function traverseDirs(
@@ -28,7 +31,7 @@ export async function traverseDirs(
 
     if (nodeStats.isDirectory()) {
       await traverseDirs(nodeFullPath, callback);
-    } else if (isValidFileExtension(nodeFullPath)) {
+    } else if (isValidFileExtension(nodeFullPath, SUPPORTED_CODEC)) {
       await callback(nodeFullPath);
     }
   }

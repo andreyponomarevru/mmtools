@@ -1,6 +1,6 @@
 import fs from "fs";
 import { validateM3UfilePaths, processBrokenM3Upaths } from "../utils";
-import { BUILD_DIR, M3U_TRACKLIST } from "../config";
+import { BUILD_DIR, M3U_TRACKLIST } from "../config/constants";
 import { validateAudioFile } from "../validate-lib/validate-lib";
 import {
   buildArtistsList,

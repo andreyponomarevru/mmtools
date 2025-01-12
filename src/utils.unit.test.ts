@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, jest } from "@jest/globals";
 import {
   parseID3V2Array,
   extractFilePathsFromM3U,
@@ -13,22 +13,23 @@ import {
   m3uWithRelativePathsSavedInQuodLibet,
   m3uWithRelativePathsSavedInVLC,
 } from "./test-helpers/m3u-playlists";
+import { isValidFileExtension } from "./utils";
 
 describe("parseID3V2Array", () => {
-  it("given an array of strings, returns an array parsed", () => {
+  test("given an array of valid string items, returns an array as is", () => {
     const genres = ["Ambient", "Psychedelic Rock", "Jungle"];
     const result = parseID3V2Array(genres);
 
     expect(result).toEqual(genres);
   });
 
-  it("given an empty array, returns an empty array", () => {
+  test("given an empty array, returns an empty array", () => {
     const result = parseID3V2Array([]);
 
     expect(result).toEqual([]);
   });
 
-  it("given an array containing duplicates, returns only unique items", () => {
+  test("given an array containing duplicates, returns only unique items", () => {
     const result = parseID3V2Array([
       "Ambient",
       "Downtempo",
@@ -40,13 +41,13 @@ describe("parseID3V2Array", () => {
     expect(result).toEqual(["Ambient", "Downtempo", "Rock"]);
   });
 
-  it("given an array containing empty string items, filters them out", () => {
+  test("given an array containing empty string items, filters them out", () => {
     const result = parseID3V2Array([" ", "House", "   ", "Pop", "    "]);
 
     expect(result).toEqual(["House", "Pop"]);
   });
 
-  it("given an array containing strings with blank spaces around them, returns all items trimmed", () => {
+  test("given an array containing strings with blank spaces around them, returns all items trimmed", () => {
     const result = parseID3V2Array(["   Ambient", "Rock  ", "   House    "]);
 
     expect(result).toEqual(["Ambient", "Rock", "House"]);
@@ -58,29 +59,41 @@ describe("isValidFileExtension", () => {
     jest.resetModules();
   });
 
-  test("given a file path with a valid file extension, returns true", async () => {
-    jest.doMock("./config", () => ({ SUPPORTED_CODEC: ["aiff", "mp3"] }));
-    jest.spyOn(path, "extname").mockReturnValue(".aiff");
-    const { isValidFileExtension } = await import("./utils");
+  test("given a file path with a valid file extension but capitalizied, returns true", () => {
+    const ext = "aiff";
+    jest.spyOn(path, "extname").mockReturnValue(`.${ext.toUpperCase()}`);
 
-    const result = isValidFileExtension("/path/to/file/here.aiff");
+    const result = isValidFileExtension(`/path/to/file/here.${ext}`, [
+      ext,
+      "mp3",
+    ]);
 
     expect(result).toBe(true);
   });
 
-  test("given a file path with an invalid file extension, returns false", async () => {
-    jest.doMock("./config", () => ({ SUPPORTED_CODEC: ["aiff", "mp3"] }));
-    jest.spyOn(path, "extname").mockReturnValue(".ogg");
-    const { isValidFileExtension } = await import("./utils");
+  test("given a file path with a valid file extension, returns true", () => {
+    const ext = "aiff";
+    jest.spyOn(path, "extname").mockReturnValue(`.${ext}`);
 
-    const result = isValidFileExtension("/path/to/here.ogg");
+    const result = isValidFileExtension(`/path/to/file/here.${ext}`, [
+      ext,
+      "mp3",
+    ]);
+
+    expect(result).toBe(true);
+  });
+
+  test("given a file path with an invalid file extension, returns false", () => {
+    jest.spyOn(path, "extname").mockReturnValue(".ogg");
+
+    const result = isValidFileExtension("/path/to/here.ogg", ["aiff", "mp3"]);
 
     expect(result).toBe(false);
   });
 });
 
 describe("extractFilePathsFromM3U", () => {
-  describe("extracts file paths from m3u", () => {
+  describe("successfully extracts file paths from m3u", () => {
     test("when m3u contains absolute file paths", () => {
       const result = extractFilePathsFromM3U(m3uWithAbsolutePaths.m3u);
 
@@ -143,7 +156,7 @@ describe("validateM3UfilePaths", () => {
 
 describe("processBrokenM3Upaths", () => {
   test("if there are broken paths, exits process", () => {
-    jest.spyOn(console, "error").mockImplementationOnce(() => {});
+    jest.spyOn(console, "error").mockImplementationOnce(jest.fn());
     const mockExit = jest
       .spyOn(process, "exit")
       .mockImplementationOnce((number) => {

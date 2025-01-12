@@ -2,7 +2,7 @@ import { mmFacade } from "../music-metadata-facade";
 import { UtfString } from "utfstring";
 import { parseID3V2Array } from "../utils";
 
-export type TracklistLineMeta = {
+type TracklistLineMeta = {
   artists?: string[];
   title?: string;
   year?: number;

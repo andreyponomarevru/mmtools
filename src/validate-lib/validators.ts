@@ -12,7 +12,7 @@ import {
   REPORT_BAD_YEAR,
   GENRES,
   REPORT_BAD_COVERS,
-} from "../config";
+} from "../config/constants";
 
 export async function checkCover(filePath: string, cover: IPicture | null) {
   if (cover === null) {
