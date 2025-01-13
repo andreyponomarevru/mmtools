@@ -19,7 +19,7 @@ class MusicMetadataFacade {
         album: track.common.album,
         originaldate: track.common.originaldate,
         genre: track.common.genre,
-        label: track.common.label,
+        label: track.common.label ? track.common.label[0] : undefined,
         bpm: track.common.bpm,
         catalognumber: track.common.catalognumber,
         format: track.format.duration,
