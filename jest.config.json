@@ -9,5 +9,5 @@
   "resetMocks": true,
   "restoreMocks": true,
   "extensionsToTreatAsEsm": [".ts"],
-  "setupFilesAfterEnv": ["<rootDir>/setup-jest.js"]
+  "setupFilesAfterEnv": []
 }
