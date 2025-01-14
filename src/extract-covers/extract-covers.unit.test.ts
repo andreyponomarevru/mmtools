@@ -96,7 +96,7 @@ describe("extractCovers", () => {
     await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
 
     await expect(writeFileSpy.mock.calls[0][0]).toBe(
-      `${EXTRACTED_COVERS_DIR}/1 the -future so-und of london - papua new guinea remix test-test.${measuredCover.type}`
+      `${EXTRACTED_COVERS_DIR}/1_the_-future_so-und_of_london_-_papua_new_guinea_remix_test-test.${measuredCover.type}`
     );
   });
 });

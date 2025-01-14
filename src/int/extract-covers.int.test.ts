@@ -18,10 +18,10 @@ describe("extractCovers", () => {
     const savedCovers = await fs.promises.readdir(EXTRACTED_COVERS_DIR);
 
     expect(savedCovers).toEqual([
-      "1 carlos nio  friends - woo acknowledgement.jpg",
-      "2 p real - undefined.jpg",
-      "3 miguel migs - so far rasmus fabers farplane radio edit.jpg",
-      "4 undefined - the legend of haziz.jpg",
+      "1_carlos_nio__friends_-_woo_acknowledgement.jpg",
+      "2_p_real_-_undefined.jpg",
+      "3_miguel_migs_-_so_far_rasmus_fabers_farplane_radio_edit.jpg",
+      "4_undefined_-_the_legend_of_haziz.jpg",
     ]);
   });
 });
