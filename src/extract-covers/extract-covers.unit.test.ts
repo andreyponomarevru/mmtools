@@ -1,5 +1,5 @@
 import fs from "fs";
-import * as sizeof from "image-size";
+import sizeof from "image-size";
 import { describe, expect, it, jest } from "@jest/globals";
 import { extractCovers } from "./extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
@@ -39,12 +39,11 @@ describe("extractCovers", () => {
   describe("throws error", () => {
     test("if cover is absent", async () => {
       jest.mocked(mmFacade.parseFile).mockResolvedValue(parsedTrack);
-      jest.mocked(sizeof.default).mockImplementationOnce(parsedCover as any);
+      jest.mocked(sizeof).mockImplementationOnce(parsedCover as any);
 
-      const result = () =>
-        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
-
-      await expect(result).rejects.toThrow("Track has no cover:");
+      await expect(
+        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR)
+      ).rejects.toThrow("Track has no cover:");
     });
 
     test("if cover width and height are both less than COVER_MIN_SIZE", async () => {
@@ -52,16 +51,15 @@ describe("extractCovers", () => {
         ...parsedTrack,
         cover: { ...parsedCover },
       });
-      jest.mocked(sizeof).default.mockReturnValue({
+      jest.mocked(sizeof).mockReturnValue({
         width: COVER_MIN_SIZE - 1,
         height: COVER_MIN_SIZE - 1,
         type: "jpg",
       } as any);
 
-      const result = () =>
-        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
-
-      await expect(result).rejects.toThrow("The cover is too small:");
+      await expect(
+        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR)
+      ).rejects.toThrow("The cover is too small:");
     });
 
     test("if cover size can't be determined", async () => {
@@ -69,16 +67,15 @@ describe("extractCovers", () => {
         ...parsedTrack,
         cover: { ...parsedCover },
       });
-      jest.mocked(sizeof.default).mockReturnValue({
+      jest.mocked(sizeof).mockReturnValue({
         width: undefined,
         height: undefined,
         type: undefined,
       } as any);
 
-      const result = () =>
-        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
-
-      await expect(result).rejects.toThrow("Can't read image dimensions");
+      await expect(
+        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR)
+      ).rejects.toThrow("Can't read image dimensions");
     });
   });
 
@@ -93,7 +90,7 @@ describe("extractCovers", () => {
       },
       cover: { ...parsedCover },
     });
-    jest.mocked(sizeof).default.mockReturnValue(measuredCover as any);
+    jest.mocked(sizeof).mockReturnValue(measuredCover as any);
     const writeFileSpy = jest.mocked(fs.promises.writeFile);
 
     await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);

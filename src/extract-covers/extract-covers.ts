@@ -1,5 +1,5 @@
 import fs from "fs";
-import sizeof from "image-size";
+import * as sizeof from "image-size";
 import { mmFacade } from "../music-metadata-facade";
 import { COVER_MIN_SIZE } from "../config/constants";
 
@@ -14,7 +14,7 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
       throw new Error(`Track has no cover: ${tPath}`);
     }
 
-    const { width, height, type: imgType = "" } = sizeof(cover.data);
+    const { width, height, type: imgType = "" } = sizeof.default(cover.data);
     if (!width || !height) {
       throw new Error("Can't read image dimensions");
     } else if (width < COVER_MIN_SIZE && height < COVER_MIN_SIZE) {
@@ -29,8 +29,8 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
     const filename =
       `${trackNumber} ${artists} - ${title}.${imgType}`.toLowerCase();
 
-    // "{ recursive: true}" is required to avoid an error if dir exists
-    await fs.promises.mkdir(saveTo, { recursive: true });
+    const avoidErrIfDirExists = { recursive: true };
+    await fs.promises.mkdir(saveTo, avoidErrIfDirExists);
     await fs.promises.writeFile(`${saveTo}/${filename}`, cover.data);
   }
 }
