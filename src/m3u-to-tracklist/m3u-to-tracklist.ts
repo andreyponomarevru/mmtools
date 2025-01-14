@@ -33,7 +33,7 @@ export async function m3uToTracklist(
     tracklistAsText.push(buildTracklistLine(meta));
   }
 
-  const lines = tracklistAsText.join("\n");
+  const lines = tracklistAsText.join("\n") + "\n";
   return lines;
 }
 

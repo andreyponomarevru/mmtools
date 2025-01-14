@@ -6,7 +6,12 @@ import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
 
 describe("extractCovers", () => {
   it("given an array of audio files paths, saves every file's cover to disk", async () => {
-    await fs.promises.rm(EXTRACTED_COVERS_DIR, { recursive: true });
+    const avoidErrIfDirNotExist = { force: true };
+    const rmNestedDirs = { recursive: true };
+    await fs.promises.rm(EXTRACTED_COVERS_DIR, {
+      ...avoidErrIfDirNotExist,
+      ...rmNestedDirs,
+    });
 
     await extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR);
 

@@ -11,52 +11,65 @@ import {
   checkGenres,
   checkTitle,
 } from "./validators";
-import { COVER_MIN_SIZE, GENRES } from "../config/constants";
+import {
+  COVER_MIN_SIZE,
+  GENRES,
+  REPORT_BAD_ARTISTS,
+  REPORT_BAD_BPM,
+  REPORT_BAD_COVERS,
+  REPORT_BAD_GENRES,
+  REPORT_BAD_TITLE,
+  REPORT_BAD_YEAR,
+  REPORT_LOW_BITRATE,
+} from "../config/constants";
 
-const filePath = "/path/to/file";
-
-jest.mock("fs", () => ({ promises: { appendFile: jest.fn() } }));
-const fsAppendFileMock = jest.mocked(fs.promises.appendFile);
 jest.mock("image-size");
 
 describe("checkCover", () => {
-  const picture = { format: "image/jpeg", data: new Uint8Array() } as IPicture;
+  const picture = { format: "", data: new Uint8Array() } as IPicture;
 
   it("doesn't attempt to extract cover if it is absent", async () => {
-    await checkCover(filePath, null);
+    await checkCover(null);
 
     expect(jest.mocked(sizeof)).not.toBeCalled();
   });
 
-  describe("appends an error to file", () => {
-    it("if cover is absent", async () => {
-      await checkCover(filePath, null);
+  describe("returns error", () => {
+    it("if there is no cover", async () => {
+      const result = await checkCover(null);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(1);
+      expect(result).toEqual({
+        logTo: REPORT_BAD_COVERS,
+        errors: ["no cover"],
+      });
     });
 
     it("if cover width and cover height are both less than COVER_MIN_SIZE", async () => {
-      jest.mocked(sizeof).default.mockReturnValueOnce({
-        width: COVER_MIN_SIZE - 1,
-        height: COVER_MIN_SIZE - 1,
-      } as any);
+      const width = COVER_MIN_SIZE - 1;
+      const height = COVER_MIN_SIZE - 1;
+      jest.mocked(sizeof).default.mockReturnValueOnce({ width, height } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(1);
+      expect(result).toEqual({
+        logTo: REPORT_BAD_COVERS,
+        errors: [`${width} x ${height}`],
+      });
     });
   });
 
-  describe("doesn't append an error to file", () => {
+  describe("doesn't return error", () => {
+    const emptyErr = { logTo: REPORT_BAD_COVERS, errors: [] };
+
     it("if cover height and width are both greater than COVER_MIN_SIZE", async () => {
       jest.mocked(sizeof).default.mockReturnValueOnce({
         width: COVER_MIN_SIZE + 1,
         height: COVER_MIN_SIZE + 1,
       } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(result).toEqual(emptyErr);
     });
 
     it("if cover height is greater than COVER_MIN_SIZE", async () => {
@@ -65,9 +78,9 @@ describe("checkCover", () => {
         height: COVER_MIN_SIZE + 1,
       } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(result).toEqual(emptyErr);
     });
 
     it("if cover width is greater than COVER_MIN_SIZE", async () => {
@@ -76,9 +89,9 @@ describe("checkCover", () => {
         height: 0,
       } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(result).toEqual(emptyErr);
     });
 
     it("if cover height and width are both equal to COVER_MIN_SIZE", async () => {
@@ -87,9 +100,9 @@ describe("checkCover", () => {
         height: COVER_MIN_SIZE,
       } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(result).toEqual(emptyErr);
     });
 
     it("if only cover height is less than COVER_MIN_SIZE", async () => {
@@ -98,182 +111,158 @@ describe("checkCover", () => {
         height: COVER_MIN_SIZE - 1,
       } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(result).toEqual(emptyErr);
     });
 
     it("if only cover width is less than COVER_MIN_SIZE", async () => {
+      const width = COVER_MIN_SIZE - 1;
+      const height = COVER_MIN_SIZE;
       jest.mocked(sizeof).default.mockReturnValueOnce({
-        width: COVER_MIN_SIZE - 1,
-        height: COVER_MIN_SIZE,
+        width,
+        height,
       } as any);
 
-      await checkCover(filePath, picture);
+      const result = await checkCover(picture);
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(result).toEqual({
+        logTo: REPORT_BAD_COVERS,
+        errors: [],
+      });
     });
   });
 });
 
 describe("checkBPM", () => {
-  describe("doesn't append an error to file", () => {
-    it("if BPM is bigger than 0", () => {
-      checkBPM(filePath, 88);
+  const err = { logTo: REPORT_BAD_BPM, errors: [""] };
+  const emptyErr = { logTo: REPORT_BAD_BPM, errors: [] };
 
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+  describe("doesn't return error", () => {
+    it("if BPM is bigger than 0", () => {
+      expect(checkBPM(88)).toEqual(emptyErr);
     });
 
     it("if BPM is 0", () => {
-      checkBPM(filePath, 0);
-
-      expect(fsAppendFileMock.mock.calls.length).toBe(0);
+      expect(checkBPM(0)).toEqual(emptyErr);
     });
   });
 
   describe("appends an error to file", () => {
     it("if bpm is undefined", () => {
-      checkBPM(filePath, undefined);
-
-      expect(fsAppendFileMock.mock.calls.length).toBe(1);
+      expect(checkBPM(undefined)).toEqual(err);
     });
 
     it("if bpm is less than 0", () => {
-      checkBPM(filePath, -10);
-
-      expect(fsAppendFileMock.mock.calls.length).toBe(1);
+      expect(checkBPM(-10)).toEqual(err);
     });
   });
 });
 
 describe("checkBitrate", () => {
-  it("doesn't append an error if bitrate is valid", () => {
-    checkBitrate(filePath, 320000);
+  const emptyErr = { logTo: REPORT_LOW_BITRATE, errors: [] };
 
-    expect(fsAppendFileMock.mock.calls.length).toBe(0);
+  it("doesn't return error if bitrate is valid", () => {
+    expect(checkBitrate(320000)).toEqual(emptyErr);
   });
 
-  it("appends an error to file if bitrate is 0", () => {
-    checkBitrate(filePath, 0);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  it("returns error if bitrate is 0", () => {
+    expect(checkBitrate(0)).toEqual({
+      logTo: REPORT_LOW_BITRATE,
+      errors: ["0kbps"],
+    });
   });
 
-  it("appends an error to file if bitrate is undefined", () => {
-    checkBitrate(filePath, undefined);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  it("returns error if bitrate is undefined", () => {
+    expect(checkBitrate(undefined)).toEqual({
+      logTo: REPORT_LOW_BITRATE,
+      errors: ["0kbps"],
+    });
   });
 
-  it("appends an error to file if bitrate is less than MIN_BITRATE", () => {
-    checkBitrate(filePath, -1);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  it("returns error if bitrate is less than MIN_BITRATE", () => {
+    const bpm = -1;
+    expect(checkBitrate(bpm)).toEqual({
+      logTo: REPORT_LOW_BITRATE,
+      errors: [`${bpm / 1000}kbps`],
+    });
   });
 });
 
 describe("checkGenres", () => {
-  it("doesn't append an error to file if genre is valid", () => {
-    checkGenres(filePath, GENRES);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(0);
+  it("doesn't return error if genre is valid", () => {
+    expect(checkGenres(GENRES)).toEqual({
+      logTo: REPORT_BAD_GENRES,
+      errors: [],
+    });
   });
 
-  describe("appends an error to file", () => {
+  describe("returns error", () => {
     it("if genre length is 0", () => {
-      checkGenres(filePath, []);
-
-      expect(fsAppendFileMock.mock.calls.length).toBe(1);
+      expect(checkGenres([])).toEqual({
+        logTo: REPORT_BAD_GENRES,
+        errors: ["no genre :("],
+      });
     });
 
     it("if unknown genre (i.e. not listed in genres.json)", () => {
-      checkGenres(filePath, ["Jogfdopjnjk"]);
-
-      expect(fsAppendFileMock.mock.calls.length).toBe(1);
+      expect(checkGenres(["Jogfdopjnjk"])).toEqual({
+        logTo: REPORT_BAD_GENRES,
+        errors: ["Jogfdopjnjk"],
+      });
     });
   });
 });
 
 describe("checkTitle", () => {
-  it("doesn't append error to file if title is valid", () => {
-    checkTitle(filePath, "Track title");
+  const err = { logTo: REPORT_BAD_TITLE, errors: [""] };
+  const emptyErr = { logTo: REPORT_BAD_TITLE, errors: [] };
 
-    expect(fsAppendFileMock.mock.calls.length).toBe(0);
+  it("doesn't return error if title is valid", () => {
+    expect(checkTitle("Track title")).toEqual(emptyErr);
   });
 
-  it("appends error to file if title length is 0", () => {
-    checkTitle(filePath, "");
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  it("retruns error if title length is 0", () => {
+    expect(checkTitle("")).toEqual(err);
   });
 
-  it("appends error to file if title is undefined", () => {
-    checkTitle(filePath, undefined);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  it("returns error if title is undefined", () => {
+    expect(checkTitle(undefined)).toEqual(err);
   });
 });
 
 describe("checkArtists", () => {
-  it("doesn't append error to file if artists length > 0", () => {
-    checkArtists(filePath, ["one"]);
+  const err = { logTo: REPORT_BAD_ARTISTS, errors: [""] };
+  const emptyErr = { logTo: REPORT_BAD_ARTISTS, errors: [] };
 
-    expect(fsAppendFileMock.mock.calls.length).toBe(0);
+  it("doesn't return error if artists length > 0", () => {
+    expect(checkArtists(["one"])).toEqual(emptyErr);
   });
 
-  it("appends error to file if artists length is 0", () => {
-    checkArtists(filePath, []);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  it("returns error if artists length is 0", () => {
+    expect(checkArtists([])).toEqual(err);
   });
 });
 
 describe("checkYear", () => {
-  it("doesn't append error to file if the year is valid", () => {
-    checkYear(filePath, 2024);
+  const err = { logTo: REPORT_BAD_YEAR, errors: [""] };
+  const emptyErr = { logTo: REPORT_BAD_YEAR, errors: [] };
 
-    expect(fsAppendFileMock.mock.calls.length).toBe(0);
+  it("doesn't return error if the year is valid", () => {
+    expect(checkYear(2024)).toEqual(emptyErr);
   });
 
-  it("appends error to file if year is undefined", () => {
-    checkYear(filePath, undefined);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
-  });
-
-  it("appends error to file if year is 0", () => {
-    checkYear(filePath, 0);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
-  });
-
-  it("appends error to file if year is a negative number", () => {
-    checkYear(filePath, -1);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
-  });
-
-  it("appends error to file if year is not an integer", () => {
-    checkYear(filePath, 2024.5);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
-  });
-
-  it("appends error to file if year is bigger than 2050", () => {
-    checkYear(filePath, 2051);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
-  });
-
-  it("appends error to file if year is -Infinity", () => {
-    checkYear(filePath, -Infinity);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
-  });
-
-  it("appends error to file if year is +Infinity", () => {
-    checkYear(filePath, Infinity);
-
-    expect(fsAppendFileMock.mock.calls.length).toBe(1);
+  describe("returns error", () => {
+    it.concurrent.each([
+      [undefined, err],
+      [0, err],
+      [-1, err],
+      [2024.5, err],
+      [2051, err],
+      [-Infinity, err],
+      [Infinity, err],
+    ])("if the year is %i)", async (arg, expected) => {
+      expect(checkYear(arg)).toEqual(expected);
+    });
   });
 });

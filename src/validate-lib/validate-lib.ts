@@ -14,21 +14,45 @@ import {
 
 export let tracksTotal = 0;
 
-export async function validateAudioFile(filePath: string) {
+export async function validateAudioFile(
+  filePath: string,
+  shouldThrow = false
+): Promise<undefined | void> {
   const { meta, cover } = await mmFacade.parseFile(filePath);
 
-  await checkCover(filePath, cover);
-  await checkBPM(filePath, meta.bpm);
-  await checkBitrate(filePath, meta.bitrate);
-  await checkGenres(filePath, parseID3V2Array(meta.genre || []));
-  await checkTitle(filePath, meta.title);
-  await checkArtists(filePath, parseID3V2Array(meta.artists || []));
-  await checkYear(filePath, meta.year);
+  const validationResults = [
+    checkCover(cover),
+    checkBPM(meta.bpm),
+    checkBitrate(meta.bitrate),
+    checkGenres(parseID3V2Array(meta.genre || [])),
+    checkTitle(meta.title),
+    checkArtists(parseID3V2Array(meta.artists || [])),
+    checkYear(meta.year),
+  ];
+
+  const validationErrors = validationResults.filter(
+    (r) => r.errors.length !== 0
+  );
+
+  if (shouldThrow && validationErrors.length > 0) {
+    throw new Error(`MISSING ID3 TAGS. See logs in /build dir\n`);
+  }
+
+  for (const { errors, logTo } of validationErrors) {
+    for (const err of errors) {
+      await fs.promises.appendFile(
+        logTo,
+        `${filePath}${err.length > 0 ? ` - ${err}` : err}\n`
+      );
+    }
+  }
 
   tracksTotal++;
 }
 
 export function onCtrlC() {
-  fs.rmSync(REPORTS_DIR, { force: true, recursive: true });
+  const avoidErrIfDirNotExist = { force: true };
+  const rmNestedDirs = { recursive: true };
+  fs.rmSync(REPORTS_DIR, { ...avoidErrIfDirNotExist, ...rmNestedDirs });
   process.exit();
 }

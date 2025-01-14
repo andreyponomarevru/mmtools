@@ -9,21 +9,35 @@ import {
   REPORT_BAD_TITLE,
   REPORT_BAD_YEAR,
   REPORT_LOW_BITRATE,
-  REPORT_NO_BPM,
+  REPORT_BAD_BPM,
   REPORTS_DIR,
 } from "../config/constants";
-import { isPathExists } from "../test-helpers/helpers";
-
-const PATH_TO_INVALID_TRACKS = "./test-data/music-lib/invalid-tags";
-const PATH_TO_VALID_TRACKS = "./test-data/music-lib/valid-tags";
+import {
+  isPathExists,
+  PATH_TO_INVALID_TRACKS,
+  PATH_TO_VALID_TRACKS,
+  TEST_LIB_PATH,
+} from "../test-helpers/helpers";
 
 describe("validates library", () => {
+  it("removes old REPORTS_DIR before creating a new one", async () => {
+    // NOTE I haven't been able to configure jest-extended to test the fact
+    // that rm is called *before* mkdir. TS doesn't see jest-extended types
+    // declaration file (d.ts)
+
+    const rmSyncSpy = jest.spyOn(fs.promises, "rm");
+
+    await init(TEST_LIB_PATH);
+
+    expect(rmSyncSpy.mock.calls.length).toBe(1);
+    const firstCallArg = rmSyncSpy.mock.calls[0][0];
+    const secondCallArg = rmSyncSpy.mock.calls[0][1];
+    expect(firstCallArg).toEqual(REPORTS_DIR);
+    expect(secondCallArg).toEqual({ force: true, recursive: true });
+  });
+
   it("creates .log file for each type of library constraint", async () => {
-    await fs.promises.rm(REPORTS_DIR, { force: true, recursive: true });
-
-    expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
-    await init("./test-data/music-lib");
+    await init(TEST_LIB_PATH);
 
     expect(await isPathExists(REPORTS_DIR)).toBe(true);
 
@@ -37,7 +51,7 @@ describe("validates library", () => {
       REPORT_BAD_TITLE,
       REPORT_BAD_YEAR,
       REPORT_LOW_BITRATE,
-      REPORT_NO_BPM,
+      REPORT_BAD_BPM,
     ]
       .map((str) => path.basename(str))
       .sort();
@@ -45,24 +59,14 @@ describe("validates library", () => {
   });
 
   it("doesn't create .log files if there are no invalid ID3 tags", async () => {
-    await fs.promises.rm(REPORTS_DIR, { force: true, recursive: true });
-
-    expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
     await init(PATH_TO_VALID_TRACKS);
 
     const reportsDir = await fs.promises.readdir(REPORTS_DIR);
     expect(reportsDir.length).toBe(0);
   });
 
-  describe(`writes error to ${REPORT_BAD_COVERS} if track has`, () => {
-    beforeEach(async () => {
-      await fs.promises.rm(REPORTS_DIR, { force: true, recursive: true });
-    });
-
-    it(`invalid cover`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+  describe("writes error to file", () => {
+    it("if track has invalid cover", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
@@ -72,9 +76,7 @@ describe("validates library", () => {
       );
     });
 
-    it(`invalid genre`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+    it("if track has invalid genre", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
@@ -86,9 +88,7 @@ describe("validates library", () => {
       );
     });
 
-    it(`invalid title`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+    it("if track has invalid title", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
@@ -98,21 +98,17 @@ describe("validates library", () => {
       );
     });
 
-    it(`invalid BPM`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+    it("if track has invalid BPM", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
-        await fs.promises.readFile(REPORT_NO_BPM, { encoding: "utf-8" })
+        await fs.promises.readFile(REPORT_BAD_BPM, { encoding: "utf-8" })
       ).toBe(
         "test-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac\n"
       );
     });
 
-    it(`invalid artists`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+    it("if track has invalid artists", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
@@ -122,27 +118,23 @@ describe("validates library", () => {
       );
     });
 
-    it(`invalid year`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+    it("if track has invalid year", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
         await fs.promises.readFile(REPORT_BAD_YEAR, { encoding: "utf-8" })
       ).toBe(
-        "test-data/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac - undefined\n"
+        "test-data/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac\n"
       );
     });
 
-    it(`invalid bitrate`, async () => {
-      expect(await isPathExists(REPORTS_DIR)).toBe(false);
-
+    it("if track has invalid bitrate", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
         await fs.promises.readFile(REPORT_LOW_BITRATE, { encoding: "utf-8" })
       ).toBe(
-        "128kbps - test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3\n"
+        "test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3 - 128kbps\n"
       );
     });
   });
