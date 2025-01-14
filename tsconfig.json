@@ -79,6 +79,6 @@
     "allowSyntheticDefaultImports": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*.ts", "src/environment.d.ts"],
+  "include": ["src/**/*.ts", "src/*.d.ts"],
   "exclude": ["node_modules", "**/*.unit.test.ts", "**/*.int.test.ts"]
 }
