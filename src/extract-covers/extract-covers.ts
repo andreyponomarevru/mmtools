@@ -26,8 +26,9 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
     const trackNumber = index + 1;
     const artists = meta.artists?.join(", ").replace(nonSafeCharsRegex, "");
     const title = meta.title?.replace(nonSafeCharsRegex, "");
-    const filename =
-      `${trackNumber} ${artists} - ${title}.${imgType}`.toLowerCase();
+    const filename = `${trackNumber} ${artists} - ${title}.${imgType}`
+      .toLowerCase()
+      .replace(/ /g, "_");
 
     const avoidErrIfDirExists = { recursive: true };
     await fs.promises.mkdir(saveTo, avoidErrIfDirExists);
