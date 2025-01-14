@@ -7,9 +7,9 @@
   "author": "Andrey Ponomarev",
   "type": "module",
   "scripts": {
-    "validatelib": "npx tsx ./src/validate-lib",
-    "buildcover": "npx tsx ./src/build-cover",
-    "extractcovers": "npx tsx ./src/extract-covers",
+    "validatelib": "NODE_ENV='production' npx tsx ./src/validate-lib",
+    "buildcover": "NODE_ENV='production' npx tsx ./src/build-cover",
+    "extractcovers": "NODE_ENV='production' npx tsx ./src/extract-covers",
     "extracttracklist": "NODE_ENV='production' npx tsx ./src/m3u-to-tracklist",
     "test:unit": "jest --testMatch='**/*.unit.test.ts' --verbose --detectOpenHandles",
     "test:int": "jest --testMatch='**/*.int.test.ts' --verbose --detectOpenHandles --runInBand",
