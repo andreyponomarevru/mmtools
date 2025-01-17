@@ -27,7 +27,7 @@ describe("converts m3u into tracklist", () => {
   it("doesn't throw on validation error if 'shouldThrow' arg is omitted", async () => {
     await expect(init(M3U_PATH)).resolves.toBe(undefined);
   });
-  /*
+
   it("given an .m3u file, creates a .txt file containing data", async () => {
     await init(M3U_PATH);
 
@@ -36,7 +36,7 @@ describe("converts m3u into tracklist", () => {
     expect(tracklist.length > 0).toBe(true);
   });
 
-  it("given an .m3u file, creates a file containing properly formatted tracklist", async () => {
+  /*  it("given an .m3u file, creates a file containing properly formatted tracklist", async () => {
     await init(M3U_PATH);
 
     const tracklist = await fs.promises.readFile(TRACKLIST_OUTPUT_PATH, {
