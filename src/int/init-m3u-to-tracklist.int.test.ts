@@ -19,7 +19,7 @@ describe("converts m3u into tracklist", () => {
       "MISSING ID3 TAGS. See logs in /build dir"
     );
   });
-  /*
+
   it("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
     await expect(init(M3U_PATH, false)).resolves.toBe(undefined);
   });
@@ -27,7 +27,7 @@ describe("converts m3u into tracklist", () => {
   it("doesn't throw on validation error if 'shouldThrow' arg is omitted", async () => {
     await expect(init(M3U_PATH)).resolves.toBe(undefined);
   });
-
+  /*
   it("given an .m3u file, creates a .txt file containing data", async () => {
     await init(M3U_PATH);
 
