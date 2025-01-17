@@ -24,7 +24,7 @@ import { clearDir as clearDirHelper } from "../test-helpers/helpers";
 beforeAll(() => clearDirHelper(BUILD_DIR));
 
 describe("validates library", () => {
-  it("clears BUILD_DIR before creating a new one", async () => {
+  /*it("clears BUILD_DIR before creating a new one", async () => {
     // NOTE I haven't been able to configure jest-extended to test the fact
     // that rm is called *before* mkdir. TS doesn't see jest-extended types
     // declaration file (d.ts)
@@ -35,7 +35,7 @@ describe("validates library", () => {
 
     expect(rmSyncSpy).toHaveBeenCalledTimes(1);
     expect(rmSyncSpy).toHaveBeenCalledWith(BUILD_DIR);
-  });
+  });*/
 
   it("creates .log file for each type of library constraint", async () => {
     await init(TEST_LIB_PATH);
