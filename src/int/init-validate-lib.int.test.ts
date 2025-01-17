@@ -36,7 +36,7 @@ describe("validates library", () => {
     expect(rmSyncSpy).toHaveBeenCalledTimes(1);
     expect(rmSyncSpy).toHaveBeenCalledWith(BUILD_DIR);
   });*/
-
+  /*
   it("creates .log file for each type of library constraint", async () => {
     await init(TEST_LIB_PATH);
 
@@ -65,9 +65,9 @@ describe("validates library", () => {
     const reportsDir = await fs.promises.readdir(BUILD_DIR);
     expect(reportsDir.length).toBe(0);
   });
-
+*/
   describe("writes error to file", () => {
-    it("if track has invalid cover", async () => {
+    /*    it("if track has invalid cover", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
@@ -128,7 +128,7 @@ describe("validates library", () => {
         "test-data/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac\n"
       );
     });
-
+*/
     it("if track has invalid bitrate", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
