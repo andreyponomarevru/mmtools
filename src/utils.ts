@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { SUPPORTED_CODEC } from "./config/constants";
+import { BUILD_DIR, SUPPORTED_CODEC } from "./config/constants";
 
 export function parseID3V2Array(arr: string[]) {
   return arr.length > 0
@@ -46,39 +46,51 @@ export function extractFilePathsFromM3U(m3u: string) {
 
   const filePaths: string[] = [];
 
-  for (let i = 0; i < m3uLines.length; i++) {
-    const str = m3uLines[i];
+  m3uLines.forEach((line, index) => {
+    const lineWithoutFilepath = /#EXT/;
+    if (lineWithoutFilepath.test(line) || line === "") return;
 
-    if (/#EXT/.test(str) || str === "") continue;
-
-    const filePath = decodeURIComponent(str).replace("file://", "").trim();
+    const filePath = decodeURIComponent(line).replace("file://", "").trim();
     filePaths.push(filePath);
-  }
+  });
 
   return filePaths;
 }
 
-export async function validateM3UfilePaths(m3uPath: string) {
+export async function validateM3UfilePaths(m3uPath: string): Promise<string[]> {
   const m3u = await fs.promises.readFile(m3uPath, "utf-8");
 
   const trackFilePaths = extractFilePathsFromM3U(m3u);
 
   const brokenPaths: string[] = [];
-  const ok: string[] = [];
+  const validPaths: string[] = [];
 
-  for (const trackPath of trackFilePaths) {
-    !fs.existsSync(trackPath)
-      ? brokenPaths.push(trackPath)
-      : ok.push(trackPath);
+  trackFilePaths.forEach((trackPath) => {
+    fs.existsSync(trackPath)
+      ? validPaths.push(trackPath)
+      : brokenPaths.push(trackPath);
+  });
+
+  if (brokenPaths.length > 0) {
+    const list = brokenPaths.join("\n");
+    console.error(`The following M3U file paths are broken:\n\n${list}`);
+    process.exit(1);
   }
 
-  return { broken: brokenPaths, ok };
+  return validPaths;
 }
 
-export function processBrokenM3Upaths(brokenFilePaths: string[]) {
-  if (brokenFilePaths.length > 0) {
-    const list = brokenFilePaths.join("\n");
-    console.error(`The following M3U file paths are broken: \n\n${list}`);
-    process.exit();
-  }
+export function clearDir(dir: string) {
+  const avoidErrIfDirNotExist = { force: true };
+  const rmNestedDirs = { recursive: true };
+
+  if (!fs.existsSync(dir)) return;
+
+  fs.readdirSync(dir, { recursive: true }).forEach((f) => {
+    const relativePath = path.join(BUILD_DIR, String(f));
+    fs.rmSync(relativePath, {
+      ...avoidErrIfDirNotExist,
+      ...rmNestedDirs,
+    });
+  });
 }

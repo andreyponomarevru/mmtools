@@ -1,8 +1,11 @@
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
-import { EXTRACTED_COVERS_DIR } from "../config/constants";
+import { BUILD_DIR, EXTRACTED_COVERS_DIR } from "../config/constants";
 import { extractCovers } from "../extract-covers/extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
+import { clearDir } from "../utils";
+
+beforeAll(() => clearDir(BUILD_DIR));
 
 describe("extractCovers", () => {
   it("given an array of audio files paths, saves every file's cover to disk", async () => {

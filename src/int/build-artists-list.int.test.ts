@@ -1,5 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
 import { buildArtistsList } from "../m3u-to-tracklist/m3u-to-tracklist";
+import { clearDir } from "../test-helpers/helpers";
+import { BUILD_DIR } from "../config/constants";
+
+beforeAll(() => clearDir(BUILD_DIR));
 
 describe("buildArtistsList", () => {
   it("returns comma-separated list of track artists if they are set in ID3 tags", async () => {

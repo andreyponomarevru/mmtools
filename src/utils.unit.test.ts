@@ -5,7 +5,6 @@ import {
   parseID3V2Array,
   extractFilePathsFromM3U,
   validateM3UfilePaths,
-  processBrokenM3Upaths,
 } from "./utils";
 import {
   m3uWithAbsolutePaths,
@@ -14,7 +13,6 @@ import {
   m3uWithRelativePathsSavedInVLC,
 } from "./test-helpers/m3u-playlists";
 import { isValidFileExtension } from "./utils";
-
 describe("parseID3V2Array", () => {
   test("given an array of valid string items, returns an array as is", () => {
     const genres = ["Ambient", "Psychedelic Rock", "Jungle"];
@@ -131,51 +129,59 @@ describe("extractFilePathsFromM3U", () => {
 });
 
 describe("validateM3UfilePaths", () => {
-  test("if file(s) exist, returns file paths as valid", async () => {
-    jest
-      .spyOn(fs.promises, "readFile")
-      .mockResolvedValue(m3uWithAbsolutePaths.m3u);
-    jest.spyOn(fs, "existsSync").mockReturnValue(true);
-
-    const result = await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
-
-    expect(result).toEqual({ broken: [], ok: m3uWithAbsolutePaths.parsed });
-  });
-
-  test("if file(s) don't exist, returns file paths as broken", async () => {
-    jest
-      .spyOn(fs.promises, "readFile")
-      .mockResolvedValue(m3uWithAbsolutePaths.m3u);
-    jest.spyOn(fs, "existsSync").mockReturnValue(false);
-
-    const result = await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
-
-    expect(result).toEqual({ broken: m3uWithAbsolutePaths.parsed, ok: [] });
-  });
-});
-
-describe("processBrokenM3Upaths", () => {
-  test("if there are broken paths, exits process", () => {
+  beforeEach(() => {
+    jest.spyOn(process, "exit").mockImplementationOnce(jest.fn() as any);
     jest.spyOn(console, "error").mockImplementationOnce(jest.fn());
-    const mockExit = jest
-      .spyOn(process, "exit")
-      .mockImplementationOnce((number) => {
-        throw new Error("process.exit: " + number);
-      });
-
-    expect(() => {
-      processBrokenM3Upaths(["/a/b/c", "/d/e/f"]);
-    }).toThrow();
-    expect(mockExit.mock.calls.length).toBe(1);
+    jest
+      .spyOn(fs.promises, "readFile")
+      .mockResolvedValue(m3uWithAbsolutePaths.m3u);
   });
 
-  test("if there are no broken paths, doesn't exit process", () => {
-    const mockExit = jest.spyOn(process, "exit").mockImplementationOnce(() => {
-      throw new Error();
+  describe("if all paths in m3u exist", () => {
+    beforeEach(() => {
+      jest.spyOn(fs, "existsSync").mockReturnValue(true);
     });
 
-    processBrokenM3Upaths([]);
+    test("returns an array of parsed paths", async () => {
+      const result = await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
 
-    expect(mockExit).not.toBeCalled();
+      expect(result).toEqual(m3uWithAbsolutePaths.parsed);
+    });
+
+    it("doesn't exit process", async () => {
+      await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
+
+      expect(jest.mocked(process.exit)).toHaveBeenCalledTimes(0);
+    });
+
+    it("doesn't print error", async () => {
+      await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
+
+      expect(jest.mocked(console.error)).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe("if m3u contains broken paths", () => {
+    beforeEach(() => {
+      jest.spyOn(fs, "existsSync").mockReturnValue(false);
+    });
+
+    test("prints them", async () => {
+      await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
+
+      expect(jest.mocked(console.error)).toBeCalledTimes(1);
+      expect(jest.mocked(console.error)).toHaveBeenCalledWith(
+        `The following M3U file paths are broken:\n\n${m3uWithAbsolutePaths.parsed.join(
+          "\n"
+        )}`
+      );
+    });
+
+    test("exits process with error code", async () => {
+      await validateM3UfilePaths(m3uWithAbsolutePaths.m3u);
+
+      expect(jest.mocked(process.exit)).toHaveBeenCalledTimes(1);
+      expect(jest.mocked(process.exit)).toHaveBeenCalledWith(1);
+    });
   });
 });

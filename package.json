@@ -11,8 +11,8 @@
     "buildcover": "NODE_ENV='production' npx tsx ./src/build-cover",
     "extractcovers": "NODE_ENV='production' npx tsx ./src/extract-covers",
     "extracttracklist": "NODE_ENV='production' npx tsx ./src/m3u-to-tracklist",
-    "test:unit": "jest --testMatch='**/*.unit.test.ts' --verbose --detectOpenHandles",
-    "test:int": "jest --testMatch='**/*.int.test.ts' --verbose --detectOpenHandles --runInBand",
+    "test:unit": "jest --testMatch='**/*.unit.test.ts' --verbose --detectOpenHandles --watchAll",
+    "test:int": "jest -t --testMatch='**/*.int.test.ts' --verbose --detectOpenHandles --runInBand",
     "test:coverage": "jest --coverage",
     "test:clearjest": "jest --clearCache"
   },
@@ -30,6 +30,7 @@
     "@types/node": "^22.7.4",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
+    "glob": "^11.0.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "tsx": "^4.19.1",

@@ -1,18 +1,12 @@
 import fs from "fs";
-import { processBrokenM3Upaths, validateM3UfilePaths } from "../utils";
+import { clearDir, validateM3UfilePaths } from "../utils";
 import { extractCovers } from "./extract-covers";
-
-const EXTRACTED_COVERS_DIR = "./build/extracted-covers";
+import { BUILD_DIR, EXTRACTED_COVERS_DIR } from "../config/constants";
 
 export async function init(m3uFilePath: string) {
-  const avoidErrIfDirNotExist = { force: true };
   const rmNestedDirs = { recursive: true };
-  await fs.promises.rm(EXTRACTED_COVERS_DIR, {
-    ...avoidErrIfDirNotExist,
-    ...rmNestedDirs,
-  });
+  clearDir(BUILD_DIR);
   await fs.promises.mkdir(EXTRACTED_COVERS_DIR, { ...rmNestedDirs });
   const paths = await validateM3UfilePaths(m3uFilePath);
-  await processBrokenM3Upaths(paths.broken);
-  await extractCovers(paths.ok, EXTRACTED_COVERS_DIR);
+  await extractCovers(paths, EXTRACTED_COVERS_DIR);
 }

@@ -1,7 +1,7 @@
 import fs from "fs";
 import { mmFacade } from "../music-metadata-facade";
-import { parseID3V2Array } from "../utils";
-import { REPORTS_DIR } from "../config/constants";
+import { clearDir, parseID3V2Array } from "../utils";
+import { BUILD_DIR } from "../config/constants";
 import {
   checkCover,
   checkArtists,
@@ -51,8 +51,6 @@ export async function validateAudioFile(
 }
 
 export function onCtrlC() {
-  const avoidErrIfDirNotExist = { force: true };
-  const rmNestedDirs = { recursive: true };
-  fs.rmSync(REPORTS_DIR, { ...avoidErrIfDirNotExist, ...rmNestedDirs });
+  clearDir(BUILD_DIR);
   process.exit();
 }

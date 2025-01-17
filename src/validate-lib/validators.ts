@@ -38,9 +38,9 @@ export function checkGenres(genres: string[]): ValidationResult {
 
   if (genres.length === 0) errors.push("no genre :(");
 
-  for (const genre of genres) {
+  genres.forEach((genre) => {
     if (!GENRES.includes(genre)) errors.push(`${genre}`);
-  }
+  });
 
   return { logTo: REPORT_BAD_GENRES, errors };
 }

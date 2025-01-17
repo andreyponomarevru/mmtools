@@ -10,38 +10,39 @@ import {
   REPORT_BAD_YEAR,
   REPORT_LOW_BITRATE,
   REPORT_BAD_BPM,
-  REPORTS_DIR,
+  BUILD_DIR,
 } from "../config/constants";
+import * as utils from "../utils";
 import {
   isPathExists,
   PATH_TO_INVALID_TRACKS,
   PATH_TO_VALID_TRACKS,
   TEST_LIB_PATH,
 } from "../test-helpers/helpers";
+import { clearDir as clearDirHelper } from "../test-helpers/helpers";
+
+beforeAll(() => clearDirHelper(BUILD_DIR));
 
 describe("validates library", () => {
-  it("removes old REPORTS_DIR before creating a new one", async () => {
+  it("clears BUILD_DIR before creating a new one", async () => {
     // NOTE I haven't been able to configure jest-extended to test the fact
     // that rm is called *before* mkdir. TS doesn't see jest-extended types
     // declaration file (d.ts)
 
-    const rmSyncSpy = jest.spyOn(fs.promises, "rm");
+    const rmSyncSpy = jest.spyOn(utils, "clearDir");
 
     await init(TEST_LIB_PATH);
 
-    expect(rmSyncSpy.mock.calls.length).toBe(1);
-    const firstCallArg = rmSyncSpy.mock.calls[0][0];
-    const secondCallArg = rmSyncSpy.mock.calls[0][1];
-    expect(firstCallArg).toEqual(REPORTS_DIR);
-    expect(secondCallArg).toEqual({ force: true, recursive: true });
+    expect(rmSyncSpy).toHaveBeenCalledTimes(1);
+    expect(rmSyncSpy).toHaveBeenCalledWith(BUILD_DIR);
   });
 
   it("creates .log file for each type of library constraint", async () => {
     await init(TEST_LIB_PATH);
 
-    expect(await isPathExists(REPORTS_DIR)).toBe(true);
+    expect(await isPathExists(BUILD_DIR)).toBe(true);
 
-    const reportsDir = await fs.promises.readdir(REPORTS_DIR);
+    const reportsDir = await fs.promises.readdir(BUILD_DIR);
     expect(reportsDir.length).toBe(7);
 
     const fileNames = [
@@ -61,7 +62,7 @@ describe("validates library", () => {
   it("doesn't create .log files if there are no invalid ID3 tags", async () => {
     await init(PATH_TO_VALID_TRACKS);
 
-    const reportsDir = await fs.promises.readdir(REPORTS_DIR);
+    const reportsDir = await fs.promises.readdir(BUILD_DIR);
     expect(reportsDir.length).toBe(0);
   });
 
@@ -130,6 +131,8 @@ describe("validates library", () => {
 
     it("if track has invalid bitrate", async () => {
       await init(PATH_TO_INVALID_TRACKS);
+
+      console.log(REPORT_LOW_BITRATE);
 
       expect(
         await fs.promises.readFile(REPORT_LOW_BITRATE, { encoding: "utf-8" })

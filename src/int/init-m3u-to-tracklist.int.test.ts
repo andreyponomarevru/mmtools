@@ -1,11 +1,11 @@
 import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
 import { init } from "../m3u-to-tracklist/init";
-import { TRACKLIST_OUTPUT_PATH } from "../config/constants";
-import { isPathExists } from "../test-helpers/helpers";
+import { BUILD_DIR, TRACKLIST_OUTPUT_PATH } from "../config/constants";
+import { isPathExists, M3U_PATH } from "../test-helpers/helpers";
+import { clearDir } from "../utils";
 
 const EXPECTED_TRACKLIST_PATH = "./test-data/expected-tracklist.txt";
-const M3U_PATH = "./test-data/m3u-playlists/absolute-paths-saved-in-vlc.m3u";
 
 async function cleanupDir() {
   const rmNestedDirs = { recursive: true };
@@ -15,6 +15,8 @@ async function cleanupDir() {
     ...avoidErrIfDirNotExist,
   });
 }
+
+beforeAll(() => clearDir(BUILD_DIR));
 
 describe("converts m3u into tracklist", () => {
   beforeEach(async () => await cleanupDir());

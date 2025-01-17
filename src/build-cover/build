@@ -2,13 +2,11 @@
 
 set -eu -o pipefail
 
-readonly PHOTO_PATH_ARG="$1"
-readonly DATE_ARG="$2"
-readonly TRACK_PATHS_FILE="$3"
+readonly BUILD_DIR="$1"
+readonly PHOTO_PATH_ARG="$2"
+readonly DATE_ARG="$3"
 readonly EXTRACTED_COVERS_DIR="$4"
-
-readonly ARTISTS_DUMP_FILE="./build/artists_dump.txt"
-readonly ARTISTS_UNIQUE_FILE="./build/artists.txt"
+readonly NUMBER_OF_COVER_VERSIONS_TO_CREATE="$5"
 
 readonly COMPILED_SVG_NAME="temp_compiled"
 readonly COVER_SIZE=1600
@@ -31,31 +29,29 @@ function svg2png() {
   inkscape \
     --export-background-opacity=0 \
     --export-type="png" \
-    "./build/$COMPILED_SVG_NAME.svg"
+    "$BUILD_DIR/$COMPILED_SVG_NAME.svg"
 }
 
 function create_randomly_scattered_images() {
   # Random sort makes the overlap (order) of covers on image different each time
   local -r list="$(find "$EXTRACTED_COVERS_DIR" -type f | sort --random-sort | tr '\n' ' ')"
-  convert -size 1600x1600 xc:none ./build/tmp-result.png
+  convert -size 1600x1600 xc:none "$BUILD_DIR/tmp-result.png"
   (
     for img in $list; do
-      echo "file = $img"
-      echo "$img" "+++++++++++++++++++++++++++"
       angle=$(convert xc: -format "%[fx:round(-22.5+45*(rand()))]" info:)
       xoff=$(convert xc: -format "%[fx:round(1600*rand())]" info:)
       yoff=$(convert xc: -format "%[fx:round(1600*rand())]" info:)
       #echo >&2 "angle=$angle; xoff=$xoff; yoff=$yoff"
-      convert "$img" -resize 400x -background none -rotate "$angle" -set page "+${xoff}+${yoff}" miff:-
+      convert "$img" -resize 400x -background none -rotate $angle -set page +${xoff}+${yoff} miff:-
     done
-  ) #| convert ./build/tmp-result.png - -background none -layers merge +repage ./build/scattered.png
+  ) | convert "$BUILD_DIR/tmp-result.png" - -background none -layers merge +repage "$BUILD_DIR/scattered.png"
 }
 
 function mergeImages() {
-  local -r PATH_PHOTO="./build/photo.jpg"
-  local -r PATH_SVG="./build/${COMPILED_SVG_NAME}.png"
-  # local -r PATH_LATEX_TEXT="./build/artists.png"
-  local -r PATH_SCATTERED_COVERS="./build/scattered.png"
+  local -r arg1_img_number="$1"
+  local -r PATH_PHOTO="$BUILD_DIR/photo.jpg"
+  local -r PATH_SVG="$BUILD_DIR/${COMPILED_SVG_NAME}.png"
+  local -r PATH_SCATTERED_COVERS="$BUILD_DIR/scattered.png"
 
   convert \
     "$PATH_PHOTO" "$PATH_SCATTERED_COVERS" "$PATH_SVG" \
@@ -65,70 +61,37 @@ function mergeImages() {
     -layers Flatten \
     -gravity center \
     -quality 100 \
-    "./build/result-$(date +%s).jpg"
+    "$BUILD_DIR/result-${arg1_img_number}.jpg"
 }
 
 ################################################################################
 # Main
 
-# Generate unique, formatted artists list from song paths
-
-rm --force "$ARTISTS_DUMP_FILE" "$ARTISTS_UNIQUE_FILE"
-touch "$ARTISTS_DUMP_FILE" "$ARTISTS_UNIQUE_FILE"
-
-printf '\nGetting artists from ID3 tags ...\n\n'
-
-while read -r path; do
-  operon list -t "$path" |
-    grep ":artist" |
-    cut --delimiter=':' --field='2'
-done <"${TRACK_PATHS_FILE?}" >"$ARTISTS_DUMP_FILE"
-
-# Use awk to remove the duplicate lines preserving their order in the file
-# https://iridakos.com/programming/2019/05/16/remove-duplicate-lines-preserving-order-linux
-awk '!visited[$0]++' "./$ARTISTS_DUMP_FILE" |
-  sed -z 's/\n*$//;s/\n/, /g;s/$/\n/' |
-  sed "s/&/\\\&/g" >"./$ARTISTS_UNIQUE_FILE"
-
-cat "./$ARTISTS_UNIQUE_FILE"
-
-rm "$ARTISTS_DUMP_FILE"
-
-printf '%s' "$ARTISTS_UNIQUE_FILE"
-
-# Build cover
-
-#xelatex \
-#  --shell-escape \
-#  -output-directory=./build \
-#  ./src/build-cover/artists.tex
-
-#convert \
-#  -density 600 \
-#  -quality 100 \
-#  -resize 1600x1600 \
-#  ./build/artists.pdf ./build/artists.png
-
-touch "./build/$COMPILED_SVG_NAME.svg"
-printf "%s" "$SVG" >"./build/$COMPILED_SVG_NAME.svg"
+mkdir -p "$BUILD_DIR"
+touch "$BUILD_DIR/$COMPILED_SVG_NAME.svg"
+printf "%s" "$SVG" >"$BUILD_DIR/$COMPILED_SVG_NAME.svg"
 
 svg2png
 
+mkdir -p "$BUILD_DIR"
 convert \
   -resize "x$COVER_SIZE" \
   -crop "${COVER_SIZE}x${COVER_SIZE}+0+0" \
   -gravity center \
   -quality 100 \
-  "$PHOTO_PATH_ARG" "./build/photo.jpg"
+  "$PHOTO_PATH_ARG" "$BUILD_DIR/photo.jpg"
 
-for ((i = 0; i <= 30; i++)); do
+# Create 30 versions of the same cover - each has covers scattered all over photo in a different manner, choose the best one manually
+for ((i = 0; i <= "$NUMBER_OF_COVER_VERSIONS_TO_CREATE"; i++)); do
   create_randomly_scattered_images
-  mergeImages
+  mergeImages "$i"
 done
 
 ################################################################################
 # Cleanup
 
-rm --force \
-  ./build/*.{pdf,svg,log,aux,txt} \
-  ./build/photo.jpg
+rm \
+  --recursive \
+  --force \
+  "$BUILD_DIR/extracted-covers" \
+  "$BUILD_DIR"/{scattered.png,temp_compiled.png,tmp-result.png,temp_compiled.svg,temp_trackpaths.txt,photo.jpg,artists.txt}
