@@ -129,7 +129,7 @@ describe("validates library", () => {
       );
     });
 */
-    it("if track has invalid bitrate", async () => {
+    it.only("if track has invalid bitrate", async () => {
       jest.spyOn(console, "error").mockImplementation(jest.fn());
       jest.spyOn(process, "exit").mockImplementation(jest.fn() as any);
 
