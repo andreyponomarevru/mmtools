@@ -130,9 +130,9 @@ describe("validates library", () => {
     });
 */
     it("if track has invalid bitrate", async () => {
-      await init(PATH_TO_INVALID_TRACKS);
+      jest.spyOn(console, "error");
 
-      console.log(REPORT_LOW_BITRATE);
+      await init(PATH_TO_INVALID_TRACKS);
 
       expect(
         await fs.promises.readFile(REPORT_LOW_BITRATE, { encoding: "utf-8" })
