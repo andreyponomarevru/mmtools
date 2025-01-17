@@ -129,7 +129,7 @@ describe("validates library", () => {
       );
     });
 
-    it.only("if track has invalid bitrate", async () => {
+    it("if track has invalid bitrate", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(

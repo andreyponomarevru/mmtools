@@ -3,7 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import { BUILD_DIR, EXTRACTED_COVERS_DIR } from "../config/constants";
 import { extractCovers } from "../extract-covers/extract-covers";
 import { m3uWithAbsolutePaths } from "../test-helpers/m3u-playlists";
-import { clearDir } from "../utils";
+import { clearDir } from "../test-helpers/helpers";
 
 beforeAll(() => clearDir(BUILD_DIR));
 

@@ -3,23 +3,16 @@ import { describe, expect, it } from "@jest/globals";
 import { init } from "../m3u-to-tracklist/init";
 import { BUILD_DIR, TRACKLIST_OUTPUT_PATH } from "../config/constants";
 import { isPathExists, M3U_PATH } from "../test-helpers/helpers";
-import { clearDir } from "../utils";
+import { clearDir } from "../test-helpers/helpers";
+
+// THIS FILE FAILS ALL TEST SUITES
 
 const EXPECTED_TRACKLIST_PATH = "./test-data/expected-tracklist.txt";
-
-async function cleanupDir() {
-  const rmNestedDirs = { recursive: true };
-  const avoidErrIfDirNotExist = { force: true };
-  await fs.promises.rm(TRACKLIST_OUTPUT_PATH, {
-    ...rmNestedDirs,
-    ...avoidErrIfDirNotExist,
-  });
-}
 
 beforeAll(() => clearDir(BUILD_DIR));
 
 describe("converts m3u into tracklist", () => {
-  beforeEach(async () => await cleanupDir());
+  beforeEach(async () => await clearDir(BUILD_DIR));
 
   it("throws an error on validation error if 'shouldThrow' arg is set to true", async () => {
     await expect(init(M3U_PATH, true)).rejects.toThrowError(
