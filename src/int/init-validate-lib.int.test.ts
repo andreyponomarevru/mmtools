@@ -24,7 +24,7 @@ import { clearDir as clearDirHelper } from "../test-helpers/helpers";
 beforeAll(() => clearDirHelper(BUILD_DIR));
 
 describe("validates library", () => {
-  /*it("clears BUILD_DIR before creating a new one", async () => {
+  it("clears BUILD_DIR before creating a new one", async () => {
     // NOTE I haven't been able to configure jest-extended to test the fact
     // that rm is called *before* mkdir. TS doesn't see jest-extended types
     // declaration file (d.ts)
@@ -35,8 +35,8 @@ describe("validates library", () => {
 
     expect(rmSyncSpy).toHaveBeenCalledTimes(1);
     expect(rmSyncSpy).toHaveBeenCalledWith(BUILD_DIR);
-  });*/
-  /*
+  });
+
   it("creates .log file for each type of library constraint", async () => {
     await init(TEST_LIB_PATH);
 
@@ -65,9 +65,9 @@ describe("validates library", () => {
     const reportsDir = await fs.promises.readdir(BUILD_DIR);
     expect(reportsDir.length).toBe(0);
   });
-*/
+
   describe("writes error to file", () => {
-    /*    it("if track has invalid cover", async () => {
+    it("if track has invalid cover", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
@@ -128,11 +128,8 @@ describe("validates library", () => {
         "test-data/music-lib/invalid-tags/03. Гости Из Будущего - Время Песок.flac\n"
       );
     });
-*/
-    it.only("if track has invalid bitrate", async () => {
-      // jest.spyOn(console, "error").mockImplementation(jest.fn());
-      // jest.spyOn(process, "exit").mockImplementation(jest.fn() as any);
 
+    it.only("if track has invalid bitrate", async () => {
       await init(PATH_TO_INVALID_TRACKS);
 
       expect(
