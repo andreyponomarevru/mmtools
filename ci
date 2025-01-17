@@ -11,6 +11,6 @@ printf '\n2. Run unit tests\n\n'
 yarn run test:unit
 
 printf '\n3. Run integration tests\n\n'
-# yarn run test:int
+yarn run test:int
 
 printf '\n\nDone\n'
