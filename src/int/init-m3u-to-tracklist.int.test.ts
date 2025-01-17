@@ -15,6 +15,8 @@ describe("converts m3u into tracklist", () => {
   beforeEach(async () => await clearDir(BUILD_DIR));
 
   it("throws an error on validation error if 'shouldThrow' arg is set to true", async () => {
+    jest.spyOn(process, "exit").mockImplementation(jest.fn() as any);
+
     await expect(init(M3U_PATH, true)).rejects.toThrowError(
       "MISSING ID3 TAGS. See logs in /build dir"
     );
