@@ -14,7 +14,7 @@ import {
 
 export let tracksTotal = 0;
 
-export async function validateAudioFile(
+export async function validateID3v2Tags(
   filePath: string,
   shouldThrow = false
 ): Promise<undefined | void> {

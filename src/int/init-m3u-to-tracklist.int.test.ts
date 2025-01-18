@@ -6,8 +6,6 @@ import { M3U_PATH } from "../config/constants";
 import { clearDir, isPathExists } from "../test-helpers/helpers";
 import * as utils from "../utils";
 
-// THIS FILE FAILS ALL TEST SUITES
-
 const EXPECTED_TRACKLIST_PATH = "./test-data/expected-tracklist.txt";
 
 beforeAll(() => clearDir(BUILD_DIR));
@@ -15,6 +13,17 @@ beforeAll(() => clearDir(BUILD_DIR));
 describe("converts m3u into tracklist", () => {
   beforeEach(async () => {
     await clearDir(BUILD_DIR);
+
+    // Mock to prevent tests from failing on CI server due to the different
+    // file structure on the local machine and on CI server
+    //
+    // Usually .m3u contains absolute paths. Without mocking,
+    // validateM3UfilePaths will compare absolute paths from m3u (e.g.
+    // "file:///mnt/C4657E878E/music-lib/..." to themselves but parsed
+    // ("/mnt/C4...") and  will fail 'cause these paths don't exist on CI
+    // server. To avoid tying tests to the file system we mock the results of
+    // validateM3UfilePaths and set paths *relative* to the current fs using
+    // process.cwd(). Now theses paths exist/valid both locally and on CI server)
     jest
       .spyOn(utils, "validateM3UfilePaths")
       .mockResolvedValue([
@@ -25,7 +34,7 @@ describe("converts m3u into tracklist", () => {
       ]);
   });
 
-  it("throws an error on validation error if 'shouldThrow' arg is set to true", async () => {
+  it("throws on ID3v2 validation error if 'shouldThrow' arg is set to true", async () => {
     jest.spyOn(console, "error").mockImplementation(jest.fn());
     jest.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("MISSING ID3 TAGS. See logs in /build dir");
@@ -36,11 +45,11 @@ describe("converts m3u into tracklist", () => {
     );
   });
 
-  it("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
+  it("doesn't throw on ID3v2 validation error if 'shouldThrow' arg is set to false", async () => {
     await expect(init(M3U_PATH, false)).resolves.toBe(undefined);
   });
 
-  it("doesn't throw on validation error if 'shouldThrow' arg is omitted", async () => {
+  it("doesn't throw on ID3v2 validation error if 'shouldThrow' arg is omitted", async () => {
     await expect(init(M3U_PATH)).resolves.toBe(undefined);
   });
 

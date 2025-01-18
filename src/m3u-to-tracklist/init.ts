@@ -1,7 +1,7 @@
 import fs from "fs";
 import { validateM3UfilePaths } from "../utils";
 import { BUILD_DIR, TRACKLIST_OUTPUT_PATH } from "../config/constants";
-import { validateAudioFile } from "../validate-lib/validate-lib";
+import { validateID3v2Tags } from "../validate-lib/validate-lib";
 import {
   buildArtistsList,
   buildTracklistLine,
@@ -11,7 +11,7 @@ import {
 export async function init(m3uFilePath: string, shouldThrow = false) {
   const paths = await validateM3UfilePaths(m3uFilePath);
 
-  for (const path of paths) await validateAudioFile(path, shouldThrow);
+  for (const path of paths) await validateID3v2Tags(path, shouldThrow);
 
   const artists = await buildArtistsList(paths);
   const rmNestedDirs = { recursive: true };
