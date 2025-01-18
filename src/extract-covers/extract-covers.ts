@@ -9,8 +9,6 @@ export const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
 export async function extractCovers(trackPaths: string[], saveTo: string) {
   for (const index of trackPaths.keys()) {
     const tPath = "./" + path.relative(process.cwd(), trackPaths[index]);
-    // We need to strip from the tPath the part "/mnt/C986556/js"
-    console.log(`process.cwd: ${process.cwd()}`);
     const { meta, cover } = await mmFacade.parseFile(tPath);
 
     if (cover === null) {

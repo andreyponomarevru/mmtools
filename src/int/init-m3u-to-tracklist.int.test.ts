@@ -14,7 +14,7 @@ beforeAll(() => clearDir(BUILD_DIR));
 describe("converts m3u into tracklist", () => {
   beforeEach(async () => await clearDir(BUILD_DIR));
 
-  it.only("throws an error on validation error if 'shouldThrow' arg is set to true", async () => {
+  it("throws an error on validation error if 'shouldThrow' arg is set to true", async () => {
     jest.spyOn(console, "error").mockImplementation(jest.fn());
     jest.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("MISSING ID3 TAGS. See logs in /build dir");
@@ -33,16 +33,10 @@ describe("converts m3u into tracklist", () => {
     await expect(init(M3U_PATH)).resolves.toBe(undefined);
   });
 
-  it("given an .m3u file, creates a .txt file containing data", async () => {
+  it("given an .m3u file, creates a .txt file containing properly formatted tracklist", async () => {
     await init(M3U_PATH);
 
     await expect(isPathExists(TRACKLIST_OUTPUT_PATH)).resolves.toBe(true);
-    const tracklist = await fs.promises.readFile(TRACKLIST_OUTPUT_PATH);
-    expect(tracklist.length > 0).toBe(true);
-  });
-
-  it("given an .m3u file, creates a file containing properly formatted tracklist", async () => {
-    await init(M3U_PATH);
 
     const tracklist = await fs.promises.readFile(TRACKLIST_OUTPUT_PATH, {
       encoding: "utf-8",
