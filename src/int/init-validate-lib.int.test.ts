@@ -14,12 +14,14 @@ import {
 } from "../config/constants";
 import * as utils from "../utils";
 import {
-  isPathExists,
   PATH_TO_INVALID_TRACKS,
   PATH_TO_VALID_TRACKS,
   TEST_LIB_PATH,
+} from "../config/constants";
+import {
+  clearDir as clearDirHelper,
+  isPathExists,
 } from "../test-helpers/helpers";
-import { clearDir as clearDirHelper } from "../test-helpers/helpers";
 
 beforeAll(() => clearDirHelper(BUILD_DIR));
 
