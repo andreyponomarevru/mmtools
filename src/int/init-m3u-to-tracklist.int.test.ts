@@ -2,8 +2,8 @@ import fs from "fs";
 import { describe, expect, it } from "@jest/globals";
 import { init } from "../m3u-to-tracklist/init";
 import { BUILD_DIR, TRACKLIST_OUTPUT_PATH } from "../config/constants";
-import { isPathExists, M3U_PATH } from "../test-helpers/helpers";
-import { clearDir } from "../test-helpers/helpers";
+import { M3U_PATH } from "../config/constants";
+import { clearDir, isPathExists } from "../test-helpers/helpers";
 
 // THIS FILE FAILS ALL TEST SUITES
 
@@ -22,7 +22,7 @@ describe("converts m3u into tracklist", () => {
       "MISSING ID3 TAGS. See logs in /build dir"
     );
   });
-  /*
+
   it("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
     await expect(init(M3U_PATH, false)).resolves.toBe(undefined);
   });
@@ -49,5 +49,5 @@ describe("converts m3u into tracklist", () => {
       encoding: "utf-8",
     });
     expect(tracklist).toBe(expected);
-  });*/
+  });
 });
