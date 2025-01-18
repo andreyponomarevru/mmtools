@@ -9,7 +9,7 @@ export const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
 export async function extractCovers(trackPaths: string[], saveTo: string) {
   for (const index of trackPaths.keys()) {
     const tPath = "./" + path.relative(process.cwd(), trackPaths[index]);
-    console.log(`process.cwd: ${process.cwd}`);
+    console.log(`process.cwd: ${process.cwd()}`);
     const { meta, cover } = await mmFacade.parseFile(tPath);
 
     if (cover === null) {
