@@ -13,7 +13,17 @@ const EXPECTED_TRACKLIST_PATH = "./test-data/expected-tracklist.txt";
 beforeAll(() => clearDir(BUILD_DIR));
 
 describe("converts m3u into tracklist", () => {
-  beforeEach(async () => await clearDir(BUILD_DIR));
+  beforeEach(async () => {
+    await clearDir(BUILD_DIR);
+    jest
+      .spyOn(utils, "validateM3UfilePaths")
+      .mockResolvedValue([
+        `${process.cwd()}/test-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac`,
+        `${process.cwd()}/test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3`,
+        `${process.cwd()}/test-data/music-lib/valid-tags/Those Things Deluxe (2007)/CD 2/06 - Miguel Migs - So Far (Rasmus Faber’s Farplane radio edit) [16-44].flac`,
+        `${process.cwd()}/test-data/music-lib/invalid-tags/Various - 10/02. The Zenmenn - The Legend Of Haziz.flac`,
+      ]);
+  });
 
   it("throws an error on validation error if 'shouldThrow' arg is set to true", async () => {
     jest.spyOn(console, "error").mockImplementation(jest.fn());
@@ -26,16 +36,7 @@ describe("converts m3u into tracklist", () => {
     );
   });
 
-  it.only("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
-    jest
-      .spyOn(utils, "validateM3UfilePaths")
-      .mockResolvedValue([
-        `${process.cwd()}/test-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac`,
-        `${process.cwd()}/test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3`,
-        `${process.cwd()}/test-data/music-lib/valid-tags/Those Things Deluxe (2007)/CD 2/06 - Miguel Migs - So Far (Rasmus Faber’s Farplane radio edit) [16-44].flac`,
-        `${process.cwd()}/test-data/music-lib/invalid-tags/Various - 10/02. The Zenmenn - The Legend Of Haziz.flac`,
-      ]);
-
+  it("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
     await expect(init(M3U_PATH, false)).resolves.toBe(undefined);
   });
 
