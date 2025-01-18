@@ -23,9 +23,3 @@ export function clearDir(dir: string) {
     });
   });
 }
-
-export const TEST_LIB_PATH = "./test-data/music-lib";
-export const PATH_TO_INVALID_TRACKS = `${TEST_LIB_PATH}/invalid-tags`;
-export const PATH_TO_VALID_TRACKS = `${TEST_LIB_PATH}/valid-tags`;
-export const M3U_PATH =
-  "./test-data/m3u-playlists/absolute-paths-saved-in-vlc.m3u";

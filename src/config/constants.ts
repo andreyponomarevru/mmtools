@@ -1,7 +1,3 @@
-//
-// Music Lib rules
-//
-
 import genres from "./genres.json";
 export const GENRES = genres;
 export const SUPPORTED_CODEC = ["flac", "mp3"];
@@ -24,3 +20,13 @@ export const EXTRACTED_COVERS_DIR = `${BUILD_DIR}/extracted-covers`;
 export const TRACKLIST_OUTPUT_PATH = `${BUILD_DIR}/m3u_tracklist.txt`;
 
 export const BUILD_COVER_SCRIPT_PATH = "./src/build-cover/build";
+
+//
+// Constants for testing
+//
+
+export const TEST_LIB_PATH = "./test-data/music-lib";
+export const PATH_TO_INVALID_TRACKS = `${TEST_LIB_PATH}/invalid-tags`;
+export const PATH_TO_VALID_TRACKS = `${TEST_LIB_PATH}/valid-tags`;
+export const M3U_PATH =
+  "./test-data/m3u-playlists/absolute-paths-saved-in-vlc.m3u";
