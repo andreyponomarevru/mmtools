@@ -4,6 +4,7 @@ import { init } from "../m3u-to-tracklist/init";
 import { BUILD_DIR, TRACKLIST_OUTPUT_PATH } from "../config/constants";
 import { M3U_PATH } from "../config/constants";
 import { clearDir, isPathExists } from "../test-helpers/helpers";
+import * as utils from "../utils";
 
 // THIS FILE FAILS ALL TEST SUITES
 
@@ -26,6 +27,15 @@ describe("converts m3u into tracklist", () => {
   });
 
   it.only("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
+    jest
+      .spyOn(utils, "validateM3UfilePaths")
+      .mockResolvedValue([
+        `${process.cwd()}/test-data/music-lib/invalid-tags/Carlos Nino & Friends - Woo, Acknowledgement.flac`,
+        `${process.cwd()}/test-data/music-lib/invalid-tags/11-p__real__albertas--dedicated_2_u-46dd7eff.mp3`,
+        `${process.cwd()}/test-data/music-lib/valid-tags/Those Things Deluxe (2007)/CD 2/06 - Miguel Migs - So Far (Rasmus Faber’s Farplane radio edit) [16-44].flac`,
+        `${process.cwd()}/test-data/music-lib/invalid-tags/Various - 10/02. The Zenmenn - The Legend Of Haziz.flac`,
+      ]);
+
     await expect(init(M3U_PATH, false)).resolves.toBe(undefined);
   });
 
