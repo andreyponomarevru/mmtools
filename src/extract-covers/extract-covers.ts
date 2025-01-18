@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import * as sizeof from "image-size";
 import { mmFacade } from "../music-metadata-facade";
 import { COVER_MIN_SIZE } from "../config/constants";
@@ -7,7 +8,7 @@ export const nonSafeCharsRegex = /[^0-9a-z\- ]/gi;
 
 export async function extractCovers(trackPaths: string[], saveTo: string) {
   for (const index of trackPaths.keys()) {
-    const tPath = trackPaths[index];
+    const tPath = "./" + path.relative(process.cwd(), trackPaths[index]);
     const { meta, cover } = await mmFacade.parseFile(tPath);
 
     if (cover === null) {
@@ -24,8 +25,12 @@ export async function extractCovers(trackPaths: string[], saveTo: string) {
     }
 
     const trackNumber = index + 1;
-    const artists = meta.artists?.join(", ").replace(nonSafeCharsRegex, "");
-    const title = meta.title?.replace(nonSafeCharsRegex, "");
+    const artists =
+      meta.artists && meta.artists.length > 0
+        ? meta.artists.join(", ").replace(nonSafeCharsRegex, "")
+        : "Missing ID3v2 Artist Tag";
+    const title =
+      meta.title?.replace(nonSafeCharsRegex, "") || "Missing ID3v2 Title Tag";
     const filename = `${trackNumber} ${artists} - ${title}.${imgType}`
       .toLowerCase()
       .replace(/ /g, "_");

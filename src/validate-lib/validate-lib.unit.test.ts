@@ -1,7 +1,7 @@
 import fs from "fs";
 import sizeof from "image-size";
 import { describe, expect, it, jest } from "@jest/globals";
-import { validateAudioFile } from "./validate-lib";
+import { validateID3v2Tags } from "./validate-lib";
 import { mmFacade } from "../music-metadata-facade";
 import { COVER_MIN_SIZE } from "../config/constants";
 
@@ -40,13 +40,13 @@ const cover = {
   height: COVER_MIN_SIZE,
 } as any;
 
-describe("validateAudioFile", () => {
+describe("validateID3v2Tags", () => {
   beforeEach(() => jest.mocked(sizeof).mockReturnValue(cover));
 
   it("parses audio file", async () => {
     jest.mocked(mmFacade.parseFile).mockResolvedValue(invalidTrack);
     const filePath = "/path/to/file";
-    await validateAudioFile(filePath);
+    await validateID3v2Tags(filePath);
 
     const calledTimes = jest.mocked(mmFacade.parseFile).mock.calls.length;
     const calledWithArg = jest.mocked(mmFacade.parseFile).mock.calls[0];
@@ -68,7 +68,7 @@ describe("validateAudioFile", () => {
       cover: null,
     } as any);
 
-    await validateAudioFile("/path/to/file");
+    await validateID3v2Tags("/path/to/file");
 
     const calledTimes = jest.mocked(fs.promises.appendFile).mock.calls.length;
     expect(calledTimes).toBe(6);
@@ -78,8 +78,7 @@ describe("validateAudioFile", () => {
     it("doesn't throw, if there are no validation errors", async () => {
       jest.mocked(mmFacade.parseFile).mockResolvedValue(validTrack);
 
-      // TIP You don;t need 'await' here cause 'expect' expects the promise
-      await expect(validateAudioFile("/path/to/file")).resolves.toBe(undefined);
+      await expect(validateID3v2Tags("/path/to/file")).resolves.toBe(undefined);
     });
 
     describe("if the optional 'shouldThrow' arg is set to true", () => {
@@ -87,14 +86,14 @@ describe("validateAudioFile", () => {
         jest.mocked(mmFacade.parseFile).mockResolvedValue(invalidTrack);
 
         await expect(
-          validateAudioFile("/path/to/file", true)
+          validateID3v2Tags("/path/to/file", true)
         ).rejects.toThrowError(`MISSING ID3 TAGS. See logs in /build dir\n`);
       });
 
       it("doesn't throw, if there are no validation errors", async () => {
         jest.mocked(mmFacade.parseFile).mockResolvedValue(validTrack);
 
-        await expect(validateAudioFile("/path/to/file", true)).resolves.toBe(
+        await expect(validateID3v2Tags("/path/to/file", true)).resolves.toBe(
           undefined
         );
       });
@@ -104,7 +103,7 @@ describe("validateAudioFile", () => {
       it("doesn't throw, if no validation errors", async () => {
         jest.mocked(mmFacade.parseFile).mockResolvedValue(validTrack);
 
-        await expect(validateAudioFile("/path/to/file", false)).resolves.toBe(
+        await expect(validateID3v2Tags("/path/to/file", false)).resolves.toBe(
           undefined
         );
       });
@@ -112,7 +111,7 @@ describe("validateAudioFile", () => {
       it("doesn't throw, if there are validation errors", async () => {
         jest.mocked(mmFacade.parseFile).mockResolvedValue(invalidTrack);
 
-        await expect(validateAudioFile("/path/to/file", false)).resolves.toBe(
+        await expect(validateID3v2Tags("/path/to/file", false)).resolves.toBe(
           undefined
         );
       });

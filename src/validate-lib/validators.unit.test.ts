@@ -1,4 +1,3 @@
-import fs from "fs";
 import * as sizeof from "image-size";
 import { IPicture } from "music-metadata";
 import { describe, expect, it, jest } from "@jest/globals";

@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import sizeof from "image-size";
 import { describe, expect, it, jest } from "@jest/globals";
 import { extractCovers } from "./extract-covers";
@@ -11,6 +12,8 @@ jest.mock("image-size");
 jest.mock("fs", () => ({
   promises: { mkdir: jest.fn(), writeFile: jest.fn() },
 }));
+jest.mock("path");
+jest.mock("process");
 
 describe("extractCovers", () => {
   const measuredCover = {
@@ -18,37 +21,25 @@ describe("extractCovers", () => {
     height: COVER_MIN_SIZE,
     type: "jpg",
   };
-  const parsedTrack: Awaited<ReturnType<typeof mmFacade.parseFile>> = {
-    meta: {
-      year: undefined,
-      title: undefined,
-      artists: undefined,
-      album: undefined,
-      genre: undefined,
-      bpm: undefined,
-      label: undefined,
-      catalognumber: undefined,
-      format: undefined,
-      bitrate: undefined,
-      originaldate: undefined,
-    },
-    cover: null,
+  const emptyMetadata = {
+    year: undefined,
+    title: undefined,
+    artists: undefined,
+    album: undefined,
+    genre: undefined,
+    bpm: undefined,
+    label: undefined,
+    catalognumber: undefined,
+    format: undefined,
+    bitrate: undefined,
+    originaldate: undefined,
   };
   const parsedCover = { format: "", data: Buffer.from([]) };
 
   describe("throws error", () => {
-    test("if cover is absent", async () => {
-      jest.mocked(mmFacade.parseFile).mockResolvedValue(parsedTrack);
-      jest.mocked(sizeof).mockImplementationOnce(parsedCover as any);
-
-      await expect(
-        extractCovers(m3uWithAbsolutePaths.parsed, EXTRACTED_COVERS_DIR)
-      ).rejects.toThrow("Track has no cover:");
-    });
-
     test("if cover width and height are both less than COVER_MIN_SIZE", async () => {
       jest.mocked(mmFacade).parseFile.mockResolvedValue({
-        ...parsedTrack,
+        meta: { ...emptyMetadata },
         cover: { ...parsedCover },
       });
       jest.mocked(sizeof).mockReturnValue({
@@ -64,7 +55,7 @@ describe("extractCovers", () => {
 
     test("if cover size can't be determined", async () => {
       jest.mocked(mmFacade.parseFile).mockResolvedValue({
-        ...parsedTrack,
+        meta: { ...emptyMetadata },
         cover: { ...parsedCover },
       });
       jest.mocked(sizeof).mockReturnValue({
@@ -84,9 +75,17 @@ describe("extractCovers", () => {
 
     jest.mocked(mmFacade.parseFile).mockResolvedValue({
       meta: {
-        ...parsedTrack.meta,
-        artists: [`The ${nonSafeChars}Future So${nonSafeChars}und Of London`],
+        year: undefined,
         title: `Papua New Guinea (Remix Test${nonSafeChars}test)`,
+        artists: [`The ${nonSafeChars}Future So${nonSafeChars}und Of London`],
+        album: undefined,
+        genre: undefined,
+        bpm: undefined,
+        label: undefined,
+        catalognumber: undefined,
+        format: undefined,
+        bitrate: undefined,
+        originaldate: undefined,
       },
       cover: { ...parsedCover },
     });

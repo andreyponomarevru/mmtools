@@ -1,31 +1,33 @@
-A bunch of tools for audio files / music lib management, streamlining the creation of podcasts (generating covers, tracklists, reporting on inconsistencies in music library, etc.)
-
-**Stack:**
-
-- Node.js (TypeScript)
-- Bash
-- A bunch of command-line tools:
-  - ImageMagick (`sudo apt install imagemagick`)
-  - Inkscape (`sudo apt install inkscape`)
-  - `operon` music tagger from Quod Libet music player package (`sudo apt install quodlibet`)
+A bunch of tools for music library management, streamlining the creation of podcasts
 
 # Features
 
-The app consists of the three main tools:
+The app provides four main features:
 
-- **Cover Builder Pipeline**
-  - Extracts covers from every track in M3U playlist, resizes them to the same size and saves to disk
-  - Creates new covers composed of different SVG/PNG/JPG files.
-- **Lib Integrity Reporter**
-  - Logs all inconsistencies in the lib, creating reports on different aspects of library e.g. cover sizes, file types, bitrates, validates genres to match the list of allowed onces.
-- **Playlist Creator**
-  - Given an m3u playlist returns the raw text version of the playlist (built from ID3V2 tags)
+- **Library validator: `yarn run validatelib`** Given a path to your music library directory, the app analyzes and creates reports about all found inconsistencies, like invalid ID3v2 tags, invalid genres, too low bitrate, too small cover sizes, etc.
 
-# Testing
+- **Cover builder: `yarn run buildcover`** Given a path to a m3u playlist, a path to a photo and any text string (usually the name of your podcast), the app creates a new cover based on the predefined SVG template (it merges multiple SVG/PNG/JPG files into a single cover).
 
-To create more tracks used as test data use `ffmpeg`: take any existing tracks and cut 1 second of that track using the command below. This gives you audio files containing all ID3 tags required for testing while keeping their size small, so they can be added to version control.
+- **Covers extractor: `yarn run extractcovers`** Given a path to a m3u file, the app extracts and saves to disk the cover of every song in a playlist.
 
-```
+- **Tracklist creator: `yarn run extracttracklist`** Given a path to a m3u playlist, the app returns a text version of the playlist based on a predefined template.
+
+# Stack
+
+- Node.js (TypeScript)
+- Bash
+- A few command-line tools:
+  - ImageMagick (`sudo apt install imagemagick`)
+  - Inkscape (`sudo apt install inkscape`)
+- `jest` for testing
+
+# Development notes
+
+## Integration tests
+
+If you need more tracks for integration testing, use `ffmpeg`: take any existing tracks and cut 1 second of that track using the command below. This gives you audio files containing all ID3 tags required for testing while keeping their size small, so they can be added to version control.
+
+```shell
 ffmpeg \
   -ss 60 \
   -to 61 \
@@ -37,11 +39,9 @@ ffmpeg \
 - `-ss` — cut from (seconds)
 - `-to` — cut to (seconds)
 
-# Development notes
+## Do not update `music-metadata` package
 
-## `music-metadata` issues and bugs
-
-**DO NOT UPDATE `music-metadata` PACKAGE.** The author of `music-metadata` introduced some breaking changes concerned with ES/CommonJS modules format that lead to `jest` being unable to run integration tests with `music-metadata` heigher than `7.14.0`. I've spent several days trying to fix the issue and had no luck, so stick to the old version of this package.
+The author of `music-metadata` introduced some breaking changes concerned with ES/CommonJS modules interoperability, leading to `jest` being unable to run integration tests with `music-metadata` heigher than `7.14.0`. I've spent several days trying to fix the issue and had no luck, so stick to the old version of this package.
 
 Also, this part of `tsconfig.json`:
 

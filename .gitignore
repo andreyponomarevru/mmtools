@@ -3,5 +3,5 @@
 *.jpg
 node_modules
 coverage
-build
+build/
 test-build
