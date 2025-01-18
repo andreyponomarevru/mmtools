@@ -25,7 +25,7 @@ describe("converts m3u into tracklist", () => {
     );
   });
 
-  it("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
+  it.only("doesn't throw on validation error if 'shouldThrow' arg is set to false", async () => {
     await expect(init(M3U_PATH, false)).resolves.toBe(undefined);
   });
 
@@ -33,7 +33,7 @@ describe("converts m3u into tracklist", () => {
     await expect(init(M3U_PATH)).resolves.toBe(undefined);
   });
 
-  it("given an .m3u file, creates a .txt file containing properly formatted tracklist", async () => {
+  it("creates a .txt file containing properly formatted tracklist, given an .m3u file", async () => {
     await init(M3U_PATH);
 
     await expect(isPathExists(TRACKLIST_OUTPUT_PATH)).resolves.toBe(true);
